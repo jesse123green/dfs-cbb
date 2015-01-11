@@ -14,8 +14,13 @@ class cbbgamesSpider(scrapy.Spider):
 
     db = MySQLdb.connect("localhost","root","purplepants123","cbb",charset="utf8")
     c = db.cursor()
-    c.execute("""SELECT MAX(time) from games""")
-    startdate = c.fetchone()[0].date()
+    c.execute("""SELECT MAX(time) from games WHERE gid != '-1'""")
+
+    result = c.fetchone()
+    if len(result) == 0:
+      startdate = date(2014,11,1)
+    else:
+      startdate = result[0].date()
     stopdate = date.today()
 
     start_urls = []

@@ -16,8 +16,16 @@ class CbbGamesPipeline(object):
   def process_item(self, item, spider):
     # self.fout.write('%s\n'%item['id'])
     c = self.db.cursor()
-    c.execute("""INSERT IGNORE INTO games (gid,time) VALUES (%s, %s)""",
-              (item['id'],item['gameday'])
+    # c.execute("""SELECT * FROM games WHERE gid = %s""",(item['id'],))
+    # result = c.fetchone()
+    # print 'RESULT!',result
+    # if result is None:
+    c.execute("""INSERT INTO games (gid) VALUES (%s)""",
+              (item['id'],)
                )
+    # else:
+    #   c.execute("""UPDATE games SET gid = %s,time=%s WHERE gid=-1 and DATE(time) = %s""",
+    #             (item['id'], item['gameday'],item['gameday'].date())
+    #              )
     self.db.commit()
     return item

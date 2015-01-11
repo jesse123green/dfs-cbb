@@ -12,8 +12,9 @@ class CbbDataPipeline(object):
 
   def process_item(self, item, spider):
     c = self.db.cursor()
-    c.execute("""UPDATE games SET home=%s, away=%s,time=%s WHERE gid=%s""",
-              (item['hometeamid'], item['awayteamid'],item['gametime'],item['gameid'])
+    print item['gametime']
+    c.execute("""UPDATE games SET home=%s,away=%s,time=%s WHERE gid=%s""",
+              (item['hometeamid'],item['awayteamid'],item['gametime'],item['gameid'])
                )
     c.execute("""INSERT IGNORE INTO players (pid,name,tid) VALUES (%s, %s,%s)""",
               (item['playerid'], item['playername'], item['teamid'])
