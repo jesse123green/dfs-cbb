@@ -2,7 +2,8 @@ from pylab import plt
 import json, sys, pickle
 from sklearn import preprocessing
 from sklearn.pipeline import Pipeline
-from sklearn.ensemble import RandomForestClassifier as RF
+from sklearn.decomposition import PCA
+from sklearn.ensemble import RandomForestRegressor as RF
 from sklearn.feature_selection import SelectKBest, f_classif, chi2
 from sklearn.metrics import mean_squared_error
 from sklearn import cross_validation
@@ -29,14 +30,43 @@ def report(grid_scores, n_top=3):
 X = pickle.load(open('/Users/jesseg/Documents/fantasy/cbb/data/dataX.p','rb'))
 y = pickle.load(open('/Users/jesseg/Documents/fantasy/cbb/data/datay.p','rb'))
 
-print 'Train data shape:',X.shape
+
+
 
 clf = Pipeline([
 ('scale', preprocessing.StandardScaler()),
-('classification', ElasticNet(alpha=.02,l1_ratio=.02))
+# ('classification', SVR(kernel='linear'))
+# ('classification', RF(n_estimators=250,n_jobs=2))
+('selection',SelectKBest(k=1000)),
+# ('selection',PCA(n_components=1000)),
+('classification', ElasticNet(alpha=.02,l1_ratio=.1))
+# ('classification', Lasso())
 ])
 
 start = time()
 
-clf.fit(X,y)
-pickle.dump(clf,open('/Users/jesseg/Documents/fantasy/cbb/data/model.p','wb'))
+C = CBB()
+
+cv = cross_validation.ShuffleSplit(X.shape[0], n_iter=5,test_size=0.2, random_state=12)
+
+Xnew = np.zeros((X.shape[0],1275))
+
+Xnew[:,:50] = X
+
+i = 50
+for k in range(49):
+  for j in range(k+1,50):
+    Xnew[:,i] = X[:,k]*X[:,j]
+    i += 1
+
+print 'Train data shape:',Xnew.shape
+all_scores = []
+
+for k in np.arange(10,1000,20):
+  clf.set_params(selection__k=k)
+  score = C.train_predict(clf,Xnew,y,cv)
+  all_scores.append(score)
+  print 'Accuracy score for %i features: %.2f\n'%(k,score)
+
+plt.plot(all_scores)
+plt.show()

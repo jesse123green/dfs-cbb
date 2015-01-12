@@ -42,7 +42,7 @@ param_grid = [
 
 start = time()
 
-cv = cross_validation.ShuffleSplit(X.shape[0], n_iter=5,test_size=0.2, random_state=12)
+cv = cross_validation.ShuffleSplit(X.shape[0], n_iter=5 ,test_size=0.2, random_state=12)
 grid_search = GridSearchCV(clf, param_grid=param_grid,cv=cv,scoring='mean_squared_error')
 grid_search.fit(X,y)
 

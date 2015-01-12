@@ -2,7 +2,7 @@ from pylab import plt
 import json, sys, pickle
 from sklearn import preprocessing
 from sklearn.pipeline import Pipeline
-from sklearn.ensemble import RandomForestClassifier as RF
+from sklearn.ensemble import RandomForestRegressor as RF
 from sklearn.feature_selection import SelectKBest, f_classif, chi2
 from sklearn.metrics import mean_squared_error
 from sklearn import cross_validation
@@ -26,21 +26,28 @@ def report(grid_scores, n_top=3):
         print("")
 
 
-X = pickle.load(open('../data/dataX.p','rb'))
-y = pickle.load(open('../data/datay.p','rb'))
+X = pickle.load(open('/Users/jesseg/Documents/fantasy/cbb/data/dataX.p','rb'))
+y = pickle.load(open('/Users/jesseg/Documents/fantasy/cbb/data/datay.p','rb'))
+
+
 
 print 'Train data shape:',X.shape
 
 clf = Pipeline([
 ('scale', preprocessing.StandardScaler()),
-('classification', ElasticNet())
+# ('classification', SVR(kernel='linear'))
+# ('classification', RF(n_estimators=250,n_jobs=2))
+('classification', ElasticNet(alpha=.02,l1_ratio=.1))
+# ('classification', Lasso())
 ])
 
 start = time()
 
 C = CBB()
 
-cv = cross_validation.ShuffleSplit(X.shape[0], n_iter=1,test_size=0.2, random_state=12)
-score = C.train_predict(clf,X,y,cv)
+cv = cross_validation.ShuffleSplit(X.shape[0], n_iter=15,test_size=0.2, random_state=12)
+
+score = C.train_predict(clf,X[:,:k],y,cv)
+
 
 print 'Accuracy score: %.2f\n'%(score)

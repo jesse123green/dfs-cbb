@@ -11,7 +11,7 @@ from sklearn.linear_model import LinearRegression,SGDRegressor
 from sklearn.metrics import mean_squared_error
 import pylab as plt
 from sklearn.pipeline import Pipeline
-from sklearn.svm import SVC
+from sklearn.svm import SVC,SVR
 from sklearn.feature_selection import SelectKBest, f_classif
 from sklearn.decomposition import PCA
 from sklearn.tree import DecisionTreeClassifier
@@ -40,7 +40,7 @@ class CBB():
       xnew = xnew.reshape(xnew.shape[0], 1)
     return np.concatenate((X,xnew),axis=1)
 
-  def load_data(self):
+  def load_data(self,min_games=6):
     c = self.db.cursor()
     X = []
     y = []
@@ -53,8 +53,8 @@ class CBB():
       # c.execute("SELECT today.pid,today.gid,(today.pts+today.reb*1.2+today.ast*1.5+today.blk*2+today.stl*2-today.turnovers) fp,hist.avg_fgm,hist.avg_fga,hist.avg_tpm,hist.avg_tpa,hist.avg_ftm,hist.avg_fta,hist.avg_oreb,hist.avg_dreb,hist.avg_reb,hist.avg_ast,hist.avg_stl,hist.avg_blk,hist.avg_turnovers,hist.avg_pf,hist.avg_pts FROM (select pid,avg(fgm) avg_fgm,avg(fga) avg_fga,avg(tpm) avg_tpm,avg(tpa) avg_tpa,avg(ftm) avg_ftm,avg(fta) avg_fta,avg(oreb) avg_oreb,avg(dreb) avg_dreb,avg(reb) avg_reb,avg(ast) avg_ast,avg(stl) avg_stl,avg(blk) avg_blk,avg(turnovers) avg_turnovers,avg(pf) avg_pf,avg(pts) avg_pts from playerstats,games WHERE games.gid=playerstats.gid AND time < %s group by pid having count(pid) > 5) AS hist,(SELECT games.gid,pid,pts,reb,ast,blk,stl,turnovers FROM playerstats,games WHERE games.gid=playerstats.gid and date(time) = %s) AS today WHERE hist.pid = today.pid order by today.gid,today.pid;",
       # (aday,aday))
       c.execute("SELECT today.pid,today.gid,(today.pts+today.reb*1.2+today.ast*1.5+today.blk*2+today.stl*2-today.turnovers) fp,\
-      (hist.avg_pts+hist.avg_reb*1.2+hist.avg_ast*1.5+hist.avg_blk*2+hist.avg_stl*2-hist.avg_turnovers) fph,hist.avg_fgm,hist.avg_fga,hist.avg_tpm,hist.avg_tpa,hist.avg_ftm,hist.avg_fta,hist.avg_oreb,hist.avg_dreb,hist.avg_reb,hist.avg_ast,hist.avg_stl,hist.avg_blk,hist.avg_turnovers,hist.avg_pf,hist.avg_pts FROM (select pid,avg(fgm) avg_fgm,avg(fga) avg_fga,avg(tpm) avg_tpm,avg(tpa) avg_tpa,avg(ftm) avg_ftm,avg(fta) avg_fta,avg(oreb) avg_oreb,avg(dreb) avg_dreb,avg(reb) avg_reb,avg(ast) avg_ast,avg(stl) avg_stl,avg(blk) avg_blk,avg(turnovers) avg_turnovers,avg(pf) avg_pf,avg(pts) avg_pts from playerstats,games WHERE games.gid=playerstats.gid AND time < %s group by pid having count(pid) > 5) AS hist,(SELECT games.gid,pid,pts,reb,ast,blk,stl,turnovers FROM playerstats,games WHERE games.gid=playerstats.gid and date(time) = %s) AS today WHERE hist.pid = today.pid order by today.gid,today.pid;",
-      (aday,aday))
+      (hist.avg_pts+hist.avg_reb*1.2+hist.avg_ast*1.5+hist.avg_blk*2+hist.avg_stl*2-hist.avg_turnovers) fph,hist.avg_fgm,hist.avg_fga,hist.avg_tpm,hist.avg_tpa,hist.avg_ftm,hist.avg_fta,hist.avg_oreb,hist.avg_dreb,hist.avg_reb,hist.avg_ast,hist.avg_stl,hist.avg_blk,hist.avg_turnovers,hist.avg_pf,hist.avg_pts FROM (select pid,avg(fgm) avg_fgm,avg(fga) avg_fga,avg(tpm) avg_tpm,avg(tpa) avg_tpa,avg(ftm) avg_ftm,avg(fta) avg_fta,avg(oreb) avg_oreb,avg(dreb) avg_dreb,avg(reb) avg_reb,avg(ast) avg_ast,avg(stl) avg_stl,avg(blk) avg_blk,avg(turnovers) avg_turnovers,avg(pf) avg_pf,avg(pts) avg_pts from playerstats,games WHERE games.gid=playerstats.gid AND time < %s group by pid having count(pid) > %s) AS hist,(SELECT games.gid,pid,pts,reb,ast,blk,stl,turnovers FROM playerstats,games WHERE games.gid=playerstats.gid and date(time) = %s) AS today WHERE hist.pid = today.pid order by today.gid,today.pid;",
+      (aday,min_games,aday))
       #
       # c.execute("SELECT today.pid,today.gid,(today.pts+today.reb*1.2+today.ast*1.5+today.blk*2+today.stl*2-today.turnovers) fp,(hist.avg_pts+hist.avg_reb*1.2+hist.avg_ast*1.5+hist.avg_blk*2+hist.avg_stl*2-hist.avg_turnovers) fph FROM (select pid,avg(fgm) avg_fgm,avg(fga) avg_fga,avg(tpm) avg_tpm,avg(tpa) avg_tpa,avg(ftm) avg_ftm,avg(fta) avg_fta,avg(oreb) avg_oreb,avg(dreb) avg_dreb,avg(reb) avg_reb,avg(ast) avg_ast,avg(stl) avg_stl,avg(blk) avg_blk,avg(turnovers) avg_turnovers,avg(pf) avg_pf,avg(pts) avg_pts from playerstats,games WHERE games.gid=playerstats.gid AND time < %s group by pid having count(pid) > 5) AS hist,(SELECT games.gid,pid,pts,reb,ast,blk,stl,turnovers FROM playerstats,games WHERE games.gid=playerstats.gid and date(time) = %s) AS today WHERE hist.pid = today.pid order by today.gid,today.pid;",
       # (aday,aday))
@@ -115,11 +115,11 @@ class CBB():
       c.execute("SELECT tid,home,away FROM games,players WHERE games.gid = %s and players.pid = %s",(row[1],row[0]))
       result = c.fetchone()
       if result[0] == result[1]:
-        team = result[2]
-        opp = result[1]
-      else:
-        team = result[1]
+        team = result[0]
         opp = result[2]
+      else:
+        team = result[0]
+        opp = result[1]
 
       if isopp == 0:
         teamid = team
@@ -159,11 +159,11 @@ class CBB():
       c.execute("SELECT tid,home,away,time FROM games,players WHERE games.gid = %s and players.pid = %s",(row[1],row[0]))
       result = c.fetchone()
       if result[0] == result[1]:
-        team = result[2]
-        opp = result[1]
-      else:
-        team = result[1]
+        team = result[0]
         opp = result[2]
+      else:
+        team = result[0]
+        opp = result[1]
 
       c.execute("SELECT rank FROM rankings WHERE tid=%s and rankdate >= %s order by rankdate asc",(team,result[3]))
       c2.execute("SELECT rank FROM rankings WHERE tid=%s and rankdate >= %s order by rankdate asc",(opp,result[3]))
@@ -257,10 +257,10 @@ if __name__ == "__main__":
   print 'Train data shape:',X.shape
   print "Accuracy using unweighted fp mean: %.2f"%mean_squared_error(X[:,0],y)
 
-  pickle.dump(X,open('data/dataX.p','wb'))
-  pickle.dump(y,open('data/datay.p','wb'))
+  pickle.dump(X,open('/Users/jesseg/Documents/fantasy/cbb/data/dataX.p','wb'))
+  pickle.dump(y,open('/Users/jesseg/Documents/fantasy/cbb/data/datay.p','wb'))
 
-
+  sys.exit()
   ## Random Forest Model
   # clf = RF(n_estimators=250, n_jobs=3,bootstrap=False,min_samples_leaf=1, min_samples_split=4, criterion='entropy', max_features=30, max_depth=None)
   # clf = RF(n_estimators = 250, n_jobs = 3,max_features=30)
@@ -268,44 +268,12 @@ if __name__ == "__main__":
 
   clf = Pipeline([
   ('scale', preprocessing.StandardScaler()),
-  ('classification', SGDRegressor())
+  ('classification', SVR())
   ])
 
-  cv = cross_validation.ShuffleSplit(X.shape[0], n_iter=5,test_size=0.2,random_state=18)
+  cv = cross_validation.ShuffleSplit(X.shape[0], n_iter=1,test_size=0.2,random_state=18)
 
   score = H.train_predict(clf,X,y,cv)
 
 
   print 'Accuracy score: %.2f\n'%(score)
-  sys.exit()
-
-  ## Fit training set and predict for test set
-
-  D_test,headers = H.load_data('../data/handy_bookings_test.csv')
-  X_test,y_test = H.transform(D_test,headers)
-  clf.fit(X,y)
-
-  ## Plot important features
-
-  feaI = np.argsort(clf.feature_importances_)[::-1]
-  num_to_show = 20
-  feature_importances = clf.feature_importances_[feaI[:num_to_show]]
-  feature_names = H.feature_headers[feaI[:num_to_show]]
-  print '\n\n***********\n\n'.join(feature_names)
-
-  fig = plt.figure(figsize=(12,8))
-  plt.bar(range(num_to_show),feature_importances)
-  plt.xticks(range(num_to_show),feature_names,rotation=70,ha='center')
-  plt.subplots_adjust(bottom=.2)
-  plt.title('Top feature importance')
-  plt.show()
-
-
-  ## Predict test data and write output file
-  y_pred = H.predict(clf.predict_proba(X_test)[:,1],probability_threshold)
-
-  row_id = D_test[:,headers['row_id']]
-  fout = open('../data/cusomer_cancellation_predictions.csv','wb')
-  fout.write("row_id,customer_will_cancel\n")
-  for k in range(len(y_pred)):
-    fout.write("%s,%i\n"%(row_id[k],y_pred[k]))
