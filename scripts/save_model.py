@@ -26,17 +26,22 @@ def report(grid_scores, n_top=3):
         print("")
 
 
-X = pickle.load(open('/Users/jesseg/Documents/fantasy/cbb/data/dataX.p','rb'))
-y = pickle.load(open('/Users/jesseg/Documents/fantasy/cbb/data/datay.p','rb'))
+X = pickle.load(open('/Users/jesseg/Documents/fantasy/cbb/data_time_series/dataX_5all.p','rb'))
+y = pickle.load(open('/Users/jesseg/Documents/fantasy/cbb/data_time_series/datay_5all.p','rb'))
+
+i1  = (X[:,0]>8)
+
+y = y[i1]
+X = X[i1,:]
 
 print 'Train data shape:',X.shape
 
 clf = Pipeline([
 ('scale', preprocessing.StandardScaler()),
-('classification', ElasticNet(alpha=.02,l1_ratio=.02))
+('classification', ElasticNet(alpha=.1,l1_ratio=.2,max_iter=100000))
 ])
 
 start = time()
 
 clf.fit(X,y)
-pickle.dump(clf,open('/Users/jesseg/Documents/fantasy/cbb/data/model.p','wb'))
+pickle.dump(clf,open('/Users/jesseg/Documents/fantasy/cbb/data/model_5all_8.p','wb'))

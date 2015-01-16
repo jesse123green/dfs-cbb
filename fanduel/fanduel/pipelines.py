@@ -12,7 +12,8 @@ from cbbplayer import Player
 class FanduelPipeline(object):
   db = MySQLdb.connect("localhost","root","purplepants123","cbb",charset="utf8")
   fout = open('/Users/jesseg/Documents/fantasy/cbb/data/predictions.csv','wb')
-  fout.write('Position,Player,AVGPoints,PredictedPoints,Cost\n')
+
+  fout.write('Position,Player,Team,Opponent,isHome,AVGPoints,PredictedPoints,Cost\n')
 
   fskipped = open('/Users/jesseg/Documents/fantasy/cbb/data/skipped.csv','wb')
 
@@ -26,7 +27,7 @@ class FanduelPipeline(object):
     X = P.load_all_data()
     prediction = P.predict(X)
 
-    self.fout.write('%s,"%s",%.2f,%.2f,"%s"\n'%(item['position'],item['name'],X[0],prediction,item['salary']))
+    self.fout.write('%s,"%s",%s,%s,%i,%.2f,%.2f,"%s"\n'%(item['position'],item['name'],item['team'],item['opp'],item['home'],X[0],prediction,item['salary']))
     print 'gathering player data'
 
 
@@ -40,19 +41,26 @@ class FanduelPipeline(object):
     c.execute("""SELECT pid,players.tid FROM players,teams WHERE players.fanduel =%s and teams.fanduel=%s and players.tid = teams.tid""",\
               (item['name'],item['team']))
     result = c.fetchone()
-    if result is not None:
+    if (result is not None) and (item['isEligible']):
       self.gather_player_data(result[0],item)
     else:
-      self.fskipped.write('"%s",%s\n'%(item['name'],item['fppg']))
-      c.execute("""SELECT pid,tid FROM players WHERE name LIKE "%s" OR name LIKE "%s" """%(item['name'],item['name'].replace('.','').replace(',','')))
+      query = """SELECT pid,tid FROM players WHERE name LIKE '%%%s%%' OR name LIKE '%%%s%%' """%(item['name'],item['name'].replace('.','').replace(',',''))
+      print query
+      c.execute(query)
       result = c.fetchall()
       print result
-      if len(result) == 0:
+      if not(item['isEligible']):
+        reason = 'Not Eligible'
+      elif len(result) == 0:
         print 'NO MATCH',item['name'],item['team']
+        reason = 'No match'
       elif len(result) == 1:
+        reason = 'Not Yet Processed'
         c.execute("""UPDATE players SET fanduel = %s WHERE pid = %s""",(item['name'],result[0][0]))
         c.execute("""UPDATE teams SET fanduel = %s WHERE tid = %s""",(item['team'],result[0][1]))
       else:
         print 'MULTIPLE MATCHES',item['name'],item['team']
+        reason = 'Multiple'
 
+      self.fskipped.write('"%s",%s,%s,%s\n'%(item['name'],item['fppg'],item['team'],reason))
       self.db.commit()

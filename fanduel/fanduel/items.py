@@ -17,4 +17,5 @@ class FanduelItem(scrapy.Item):
     opp = scrapy.Field()
     home = scrapy.Field()
     position = scrapy.Field()
+    isEligible = scrapy.Field()
     pass

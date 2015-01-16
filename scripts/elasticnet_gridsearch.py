@@ -25,18 +25,25 @@ def report(grid_scores, n_top=3):
         print("")
 
 
-X = pickle.load(open('../data/dataX.p','rb'))
-y = pickle.load(open('../data/datay.p','rb'))
+X = pickle.load(open('../data_time_series/dataX_20150115.p','rb'))
+y = pickle.load(open('../data_time_series/datay_20150115.p','rb'))
+
+
+i1  = (X[:,0]>8)
+i2 = (y >= 1)
+
+y = y[i1]
+X = X[i1,:]
 
 print 'Train data shape:',X.shape
 
 clf = Pipeline([
 ('scale', preprocessing.StandardScaler()),
-('classification', ElasticNet())
+('classification', ElasticNet(max_iter=2000))
 ])
 
 param_grid = [
-  {'classification__alpha': np.arange(.02,.1,.01), 'classification__l1_ratio': np.arange(.02,.1,.01)}
+  {'classification__alpha': np.arange(.05,1,.05), 'classification__l1_ratio': np.arange(.05,1,.05)}
  ]
 
 start = time()

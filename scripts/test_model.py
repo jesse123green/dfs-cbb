@@ -6,7 +6,7 @@ from sklearn.ensemble import RandomForestRegressor as RF
 from sklearn.feature_selection import SelectKBest, f_classif, chi2
 from sklearn.metrics import mean_squared_error
 from sklearn import cross_validation
-from sklearn.linear_model import SGDRegressor,Lasso,ElasticNet
+from sklearn.linear_model import SGDRegressor,Lasso,ElasticNet,LinearRegression
 import numpy as np
 from sklearn.svm import SVC,SVR
 from sklearn.grid_search import GridSearchCV
@@ -26,10 +26,17 @@ def report(grid_scores, n_top=3):
         print("")
 
 
-X = pickle.load(open('/Users/jesseg/Documents/fantasy/cbb/data/dataX.p','rb'))
-y = pickle.load(open('/Users/jesseg/Documents/fantasy/cbb/data/datay.p','rb'))
+X = pickle.load(open('/Users/jesseg/Documents/fantasy/cbb/data_time_series/dataX_20150115.p','rb'))
+y = pickle.load(open('/Users/jesseg/Documents/fantasy/cbb/data_time_series/datay_20150115.p','rb'))
+
+# i1  = (X[:,0]>8)
+#
+# y = y[i1]
+# X = X[i1,:]
 
 
+# plt.hist(y,bins=50)
+# plt.show()
 
 print 'Train data shape:',X.shape
 
@@ -37,17 +44,17 @@ clf = Pipeline([
 ('scale', preprocessing.StandardScaler()),
 # ('classification', SVR(kernel='linear'))
 # ('classification', RF(n_estimators=250,n_jobs=2))
-('classification', ElasticNet(alpha=.02,l1_ratio=.1))
-# ('classification', Lasso())
+('classification', ElasticNet(alpha=.15,l1_ratio=.05,max_iter=5000))
 ])
 
 start = time()
 
 C = CBB()
 
-cv = cross_validation.ShuffleSplit(X.shape[0], n_iter=15,test_size=0.2, random_state=12)
+cv = cross_validation.ShuffleSplit(X.shape[0], n_iter=30,test_size=0.2, random_state=12)
 
-score = C.train_predict(clf,X[:,:k],y,cv)
+score = C.train_predict(clf,X,y,cv)
 
 
 print 'Accuracy score: %.2f\n'%(score)
+print "Accuracy using unweighted fp mean: %.2f"%mean_squared_error(X[:,0],y)

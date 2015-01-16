@@ -11,7 +11,7 @@ class fanduelSpider(scrapy.Spider):
     name = "fanduel"
     allowed_domains = ["fanduel.com"]
 
-    start_urls = ["https://www.fanduel.com/e/Game/11425?tableId=9662658&fromLobby=true"]
+    start_urls = ["https://www.fanduel.com/e/Game/11450?tableId=9780663&fromLobby=true"]
 
     def parse(self, response):
 
@@ -20,6 +20,14 @@ class fanduelSpider(scrapy.Spider):
         print '* '*50
         for d in sel.xpath('.//td[@class="player-name"]'):
           item['name'] = d.xpath('div/text()').extract()[0]
+          isEligible = d.xpath('div/span/text()').extract()
+          print 'isEligible',isEligible,len(isEligible)
+          if len(isEligible) == 0:
+            item['isEligible'] = True
+          else:
+            item['isEligible'] = False
+
+
         for d in sel.xpath('.//td[@class="player-fppg"]'):
           item['fppg'] = d.xpath('text()').extract()[0]
         for d in sel.xpath('.//td[@class="player-fixture"]'):
@@ -34,4 +42,5 @@ class fanduelSpider(scrapy.Spider):
           item['salary'] = d.xpath('text()').extract()[0]
         for d in sel.xpath('.//td[@class="player-position"]'):
           item['position'] = d.xpath('text()').extract()[0]
+
         yield item

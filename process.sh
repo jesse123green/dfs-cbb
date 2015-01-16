@@ -10,7 +10,7 @@ echo --- get rankings ---
 cd rankings
 scrapy crawl rankings
 cd ..
-# echo --- predicting fanduel ---
-# cd fanduel
-# scrapy crawl fanduel
-# cd ..
+echo --- predicting fanduel ---
+cd fanduel
+scrapy crawl fanduel
+cd ..

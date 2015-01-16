@@ -16,6 +16,7 @@ from sklearn.feature_selection import SelectKBest, f_classif
 from sklearn.decomposition import PCA
 from sklearn.tree import DecisionTreeClassifier
 import MySQLdb
+from scipy.misc import comb
 
 import warnings
 warnings.filterwarnings("ignore")
@@ -28,14 +29,17 @@ class Player():
     self.tid = tid
     self.home = home
     self.oppid = oppid
+    self.clf = pickle.load(open('/Users/jesseg/Documents/fantasy/cbb/data/model_5all_8.p','rb'))
 
   def load_all_data(self):
     X = []
     X = self.load_player_stats(X)
     X.append(self.home)
     X = self.add_team_rankings(X)
+    X = self.player_last_n_games(X,5)
     X = self.add_team_averages(X,0)
     X = self.add_team_averages(X,1)
+    # X = self.modulate_features(X)
 
     return X
 
@@ -48,6 +52,17 @@ class Player():
     result = c.fetchone()
     for x in result:
       X.append(x)
+
+    return X
+
+  def modulate_features(self,X):
+    features_start = len(X)
+
+    new_fea_num = int(comb(features_start,2))
+
+    for k in range(features_start-1):
+      for j in range(k+1,features_start):
+        X.append(float(X[k])*float(X[j]))
 
     return X
 
@@ -85,10 +100,55 @@ class Player():
 
     return X
 
+  def player_last_n_games(self,X,n=5):
+
+    c = self.db.cursor()
+    c2 = self.db.cursor()
+    k = 0
+    feature_headers = []
+
+
+    stats = []
+    c.execute("SELECT tid,home,away,date(games.time),fgm,fga,tpm,tpa,ftm,fta,oreb,dreb,reb,ast,stl,blk,turnovers,pf,pts FROM games,players,playerstats WHERE playerstats.pid = %s and players.pid = playerstats.pid and games.gid=playerstats.gid order by games.time desc LIMIT %s",(self.pid,n))
+    result = c.fetchall()
+    for game in result:
+      if game[0] == game[1]:
+        home = 1
+        opp = game[2]
+      else:
+        home = 0
+        opp = game[1]
+      # print opp
+      c2.execute("SELECT rank FROM rankings where tid=%s and rankdate >= %s order by rankdate asc",(opp,game[3]))
+      game2 = list(game[4:])
+      game2.append(home)
+
+      _rank = c2.fetchone()
+      if _rank == None:
+        rank = 10
+      else:
+        rank = _rank[0]
+      game2.append(rank)
+      stats.append(game2)
+
+    if len(stats) < 5:
+      print 'LESS THAN 5 DATA POINTS'
+      all_stats = np.zeros((17*n,))
+    else:
+      all_stats = np.reshape(stats,(17*n,))
+    # print '-'*50
+    # print self.pid
+    # print all_stats
+
+    for s in all_stats:
+      X.append(s)
+
+    return X
+
   def predict(self,X):
     ## Train model clf, predict probabilities, and determine best threshold
-    clf = pickle.load(open('/Users/jesseg/Documents/fantasy/cbb/data/model.p','rb'))
-    return clf.predict(X)
+
+    return self.clf.predict(X)
 
 if __name__ == "__main__":
 

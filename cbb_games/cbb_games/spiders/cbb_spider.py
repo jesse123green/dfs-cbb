@@ -20,7 +20,7 @@ class cbbgamesSpider(scrapy.Spider):
     if len(result) == 0:
       startdate = date(2014,11,1)
     else:
-      startdate = result[0].date()
+      startdate = result[0].date() + timedelta(1)
     stopdate = date.today()
 
     start_urls = []

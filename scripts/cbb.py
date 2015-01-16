@@ -16,9 +16,9 @@ from sklearn.feature_selection import SelectKBest, f_classif
 from sklearn.decomposition import PCA
 from sklearn.tree import DecisionTreeClassifier
 import MySQLdb
-
-import warnings
-warnings.filterwarnings("ignore")
+from scipy.misc import comb
+# import warnings
+# warnings.filterwarnings("ignore")
 
 class CBB():
 
@@ -92,16 +92,32 @@ class CBB():
     self.feature_headers = feature_headers
     return self.combine_features(X_trim,homeaway),np.array(y_trim,dtype=float)
 
-  def add_team_averages(self,X):
+  def opp_hist_rank(self,X):
     c = self.db.cursor()
-    teamavg = []
-    k = 0
+    c2 = self.db.cursor()
+    hist_ranks = []
+
     for row in self.feature_headers:
-      c.execute("SELECT sum(fgm)/count(DISTINCT(histgames.gid)) avg_fgm,sum(fga)/count(DISTINCT(histgames.gid)) avg_fga,sum(tpm)/count(DISTINCT(histgames.gid)) avg_tpm,sum(tpa)/count(DISTINCT(histgames.gid)) avg_tpa,sum(ftm)/count(DISTINCT(histgames.gid)) avg_ftm,sum(fta)/count(DISTINCT(histgames.gid)) avg_fta,sum(oreb)/count(DISTINCT(histgames.gid)) avg_oreb,sum(dreb)/count(DISTINCT(histgames.gid)) avg_dreb,sum(reb)/count(DISTINCT(histgames.gid)) avg_reb,sum(ast)/count(DISTINCT(histgames.gid)) avg_ast,sum(stl)/count(DISTINCT(histgames.gid)) avg_stl,sum(blk)/count(DISTINCT(histgames.gid)) avg_blk,sum(turnovers)/count(DISTINCT(histgames.gid)) avg_turnovers,sum(pf)/count(DISTINCT(histgames.gid)) avg_pf,sum(pts)/count(DISTINCT(histgames.gid)) avg_pts FROM (SELECT pid FROM players,(SELECT tid from players WHERE pid = %s) as player WHERE players.tid = player.tid) as teamplayers,(SELECT gid FROM games,(SELECT time from games where gid = %s) as gametime WHERE games.time < gametime.time) as histgames,playerstats WHERE playerstats.pid = teamplayers.pid and histgames.gid = playerstats.gid",\
-      (row[0],row[1]))
-      print c.fetchone()
-      teamavg.append(c.fetchone())
-    return self.combine_features(X,teamavg)
+      c.execute("SELECT tid,home,away,gid FROM games,players,(SELECT time from games WHERE gid = %s) as curr_game WHERE (games.home = players.tid or games.away = players.tid) and players.pid = %s and games.time < curr_game.time",(row[1],row[0]))
+      ranks = []
+      for result in c.fetchall():
+        if result[0] == result[1]:
+          team = result[2]
+        else:
+          team = result[1]
+        # print '* '*50
+        # print team,result[3]
+        c2.execute("SELECT rank from rankings,games where tid = %s and gid = %s and rankings.rankdate >= date(games.time) order by rankings.rankdate asc limit 1",(team,result[3]))
+        rank = c2.fetchone()
+        if rank:
+          ranks.append(rank[0])
+        else:
+          ranks.append(20)
+      # print '-------------->',ranks,np.mean(ranks)
+      hist_ranks.append(np.mean(ranks))
+
+    return self.combine_features(X,hist_ranks)
+
 
   def add_team_averages(self,X,y,isopp):
 
@@ -117,9 +133,11 @@ class CBB():
       if result[0] == result[1]:
         team = result[0]
         opp = result[2]
-      else:
+      elif result[0] == result[2]:
         team = result[0]
         opp = result[1]
+      else:
+        continue
 
       if isopp == 0:
         teamid = team
@@ -161,10 +179,11 @@ class CBB():
       if result[0] == result[1]:
         team = result[0]
         opp = result[2]
-      else:
+      elif result[0] == result[2]:
         team = result[0]
         opp = result[1]
-
+      else:
+        continue
       c.execute("SELECT rank FROM rankings WHERE tid=%s and rankdate >= %s order by rankdate asc",(team,result[3]))
       c2.execute("SELECT rank FROM rankings WHERE tid=%s and rankdate >= %s order by rankdate asc",(opp,result[3]))
       teamresults = c.fetchone()
@@ -177,6 +196,45 @@ class CBB():
       k += 1
     self.feature_headers = feature_headers
     return self.combine_features(X_trim,teamrankings),np.array(y_trim,dtype=float)
+
+
+  def player_last_n_games(self,X,n=6):
+
+    c = self.db.cursor()
+    c2 = self.db.cursor()
+    all_stats = []
+    k = 0
+    feature_headers = []
+
+    for row in self.feature_headers:
+      stats = []
+      c.execute("SELECT tid,home,away,date(cgame.time),fgm,fga,tpm,tpa,ftm,fta,oreb,dreb,reb,ast,stl,blk,turnovers,pf,pts FROM games,players,playerstats,(SELECT time from games where gid = %s) as cgame WHERE games.time < cgame.time and playerstats.pid = %s and players.pid = playerstats.pid and games.gid=playerstats.gid order by games.time desc LIMIT %s",(row[1],row[0],n))
+      result = c.fetchall()
+      for game in result:
+        if game[0] == game[1]:
+          home = 1
+          opp = game[2]
+        else:
+          home = 0
+          opp = game[1]
+        # print opp
+        c2.execute("SELECT rank FROM rankings where tid=%s and rankdate >= %s order by rankdate asc",(opp,game[3]))
+        game2 = list(game[4:])
+        game2.append(home)
+
+        _rank = c2.fetchone()
+        if _rank == None:
+          rank = 10
+        else:
+          rank = _rank[0]
+        game2.append(rank)
+        stats.append(game2)
+      #   print game2
+      # print row
+      # print '-'*50
+      all_stats.append(np.reshape(stats,(17*n,)))
+
+    return self.combine_features(X,all_stats)
 
   def date_weekday(self,X): # Extracts integer weekday from date (0-6)
     X_transformed = []
@@ -202,6 +260,20 @@ class CBB():
       X_transformed.append((d1-d2).days)
     return np.array(X_transformed)
 
+  def modulate_features(self,X):
+    features_start = X.shape[1]
+
+    new_fea_num = int(comb(features_start,2)) + features_start
+    Xnew = np.zeros((X.shape[0],new_fea_num),dtype=float)
+
+    Xnew[:,:features_start] = X
+    i = features_start
+    for k in range(features_start-1):
+      for j in range(k+1,features_start):
+        Xnew[:,i] = X[:,k]*X[:,j]
+        i += 1
+    return Xnew
+
   def train_predict(self,clf,X,y,cv):
     ## Train model clf, predict probabilities, and determine best threshold
 
@@ -213,6 +285,9 @@ class CBB():
         # continue
 
         clf.fit(X_train, y_train)
+        # y_pred = np.exp(clf.predict(X_test))
+        # y_test = np.exp(y_test)
+
         y_pred = clf.predict(X_test)
         all_scores.append(mean_squared_error(y_test,y_pred))
 
@@ -226,6 +301,7 @@ if __name__ == "__main__":
   t = time.time()
   ti= time.time()
   H = CBB()
+
   print 'Loading intial data...'
   X,y = H.load_data()
   print 'Finished after %.2f mins\n'%((time.time()-t)/60.)
@@ -241,6 +317,11 @@ if __name__ == "__main__":
   print 'Finished after %.2f mins\n'%((time.time()-ti)/60.)
   ti= time.time()
 
+  print 'Adding player game stats...'
+  X = H.player_last_n_games(X,5)
+  print 'Finished after %.2f mins\n'%((time.time()-ti)/60.)
+  ti= time.time()
+
   print 'Adding team stats...'
   X,y = H.add_team_averages(X,y,0)
   print 'Finished after %.2f mins\n'%((time.time()-ti)/60.)
@@ -251,14 +332,24 @@ if __name__ == "__main__":
   print 'Finished after %.2f mins\n'%((time.time()-ti)/60.)
   ti= time.time()
 
+  # print 'Adding opponent historical rank avg...'
+  # X = H.opp_hist_rank(X)
+  # print 'Finished after %.2f mins\n'%((time.time()-ti)/60.)
+  # ti= time.time()
+
+  # print 'Modulating features'
+  # X = H.modulate_features(X)
+  # print 'Finished after %.2f mins\n'%((time.time()-ti)/60.)
+  # ti= time.time()
+
   print 'Total time: %.2f mins\n'%((time.time()-t)/60.)
   ti= time.time()
 
   print 'Train data shape:',X.shape
   print "Accuracy using unweighted fp mean: %.2f"%mean_squared_error(X[:,0],y)
 
-  pickle.dump(X,open('/Users/jesseg/Documents/fantasy/cbb/data/dataX.p','wb'))
-  pickle.dump(y,open('/Users/jesseg/Documents/fantasy/cbb/data/datay.p','wb'))
+  pickle.dump(X,open('/Users/jesseg/Documents/fantasy/cbb/data_time_series/dataX_5all.p','wb'))
+  pickle.dump(y,open('/Users/jesseg/Documents/fantasy/cbb/data_time_series/datay_5all.p','wb'))
 
   sys.exit()
   ## Random Forest Model
