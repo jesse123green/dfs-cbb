@@ -23,13 +23,13 @@ warnings.filterwarnings("ignore")
 
 class Player():
 
-  def __init__(self,pid,tid,home,oppid):
+  def __init__(self,pid,tid,home,oppid,model_thresh,model_loss,model):
     self.db = MySQLdb.connect("localhost","root","purplepants123","cbb",charset="utf8")
     self.pid = pid
     self.tid = tid
     self.home = home
     self.oppid = oppid
-    self.clf = pickle.load(open('/Users/jesseg/Documents/fantasy/cbb/data/model_5all_8.p','rb'))
+    self.clf = pickle.load(open('/Users/jesseg/Documents/fantasy/cbb/data/model_5all_%i_%s_%s.p'%(model_thresh,model_loss,model),'rb'))
 
   def load_all_data(self):
     X = []

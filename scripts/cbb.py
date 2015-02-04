@@ -8,7 +8,7 @@ from sklearn.ensemble import ExtraTreesClassifier,AdaBoostClassifier,GradientBoo
 from sklearn.cross_validation import StratifiedKFold as KFold
 from sklearn import cross_validation
 from sklearn.linear_model import LinearRegression,SGDRegressor
-from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_squared_error,mean_absolute_error
 import pylab as plt
 from sklearn.pipeline import Pipeline
 from sklearn.svm import SVC,SVR
@@ -48,8 +48,8 @@ class CBB():
     days = c.fetchone()
 
     k = 0
-    # for aday in self.daterange(days[1]-timedelta(1),days[1]+timedelta(1)):
-    for aday in self.daterange(days[0],days[1]+timedelta(1)):
+    for aday in self.daterange(days[1]-timedelta(31),days[1]+timedelta(1)):
+    # for aday in self.daterange(days[0],days[1]+timedelta(1)):
       # c.execute("SELECT today.pid,today.gid,(today.pts+today.reb*1.2+today.ast*1.5+today.blk*2+today.stl*2-today.turnovers) fp,hist.avg_fgm,hist.avg_fga,hist.avg_tpm,hist.avg_tpa,hist.avg_ftm,hist.avg_fta,hist.avg_oreb,hist.avg_dreb,hist.avg_reb,hist.avg_ast,hist.avg_stl,hist.avg_blk,hist.avg_turnovers,hist.avg_pf,hist.avg_pts FROM (select pid,avg(fgm) avg_fgm,avg(fga) avg_fga,avg(tpm) avg_tpm,avg(tpa) avg_tpa,avg(ftm) avg_ftm,avg(fta) avg_fta,avg(oreb) avg_oreb,avg(dreb) avg_dreb,avg(reb) avg_reb,avg(ast) avg_ast,avg(stl) avg_stl,avg(blk) avg_blk,avg(turnovers) avg_turnovers,avg(pf) avg_pf,avg(pts) avg_pts from playerstats,games WHERE games.gid=playerstats.gid AND time < %s group by pid having count(pid) > 5) AS hist,(SELECT games.gid,pid,pts,reb,ast,blk,stl,turnovers FROM playerstats,games WHERE games.gid=playerstats.gid and date(time) = %s) AS today WHERE hist.pid = today.pid order by today.gid,today.pid;",
       # (aday,aday))
       c.execute("SELECT today.pid,today.gid,(today.pts+today.reb*1.2+today.ast*1.5+today.blk*2+today.stl*2-today.turnovers) fp,\
@@ -289,7 +289,8 @@ class CBB():
         # y_test = np.exp(y_test)
 
         y_pred = clf.predict(X_test)
-        all_scores.append(mean_squared_error(y_test,y_pred))
+        # all_scores.append(mean_squared_error(y_test,y_pred))
+        all_scores.append(mean_absolute_error(y_test,y_pred))
 
 
     return np.mean(all_scores)
@@ -348,8 +349,8 @@ if __name__ == "__main__":
   print 'Train data shape:',X.shape
   print "Accuracy using unweighted fp mean: %.2f"%mean_squared_error(X[:,0],y)
 
-  pickle.dump(X,open('/Users/jesseg/Documents/fantasy/cbb/data_time_series/dataX_5all.p','wb'))
-  pickle.dump(y,open('/Users/jesseg/Documents/fantasy/cbb/data_time_series/datay_5all.p','wb'))
+  pickle.dump(X,open('/Users/jesseg/Documents/fantasy/cbb/data_time_series/dataX_5all_2.p','wb'))
+  pickle.dump(y,open('/Users/jesseg/Documents/fantasy/cbb/data_time_series/datay_5all_2.p','wb'))
 
   sys.exit()
   ## Random Forest Model

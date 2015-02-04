@@ -34,14 +34,21 @@ i1  = (X[:,0]>8)
 y = y[i1]
 X = X[i1,:]
 
+'''
+## l1 loss
+>8: l1_ratio = .05, alpha = .05
+>0: l1_ratio = .15, alpha = .05
+'''
+
 print 'Train data shape:',X.shape
 
 clf = Pipeline([
 ('scale', preprocessing.StandardScaler()),
-('classification', ElasticNet(alpha=.1,l1_ratio=.2,max_iter=100000))
+('classification', SVR(kernel='rbf',C=3,gamma=.001)),
+# ('classification', ElasticNet(alpha=.05,l1_ratio=.05,max_iter=100000))
 ])
 
 start = time()
 
 clf.fit(X,y)
-pickle.dump(clf,open('/Users/jesseg/Documents/fantasy/cbb/data/model_5all_8.p','wb'))
+pickle.dump(clf,open('/Users/jesseg/Documents/fantasy/cbb/data/model_5all_8_l1_svr.p','wb'))

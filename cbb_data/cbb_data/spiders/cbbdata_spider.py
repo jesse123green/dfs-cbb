@@ -32,8 +32,8 @@ class cbbdataSpider(scrapy.Spider):
         datestr = '0' + datestr
       if datestr[-8] == ' ':
         datestr = datestr.replace(datestr[-7:],'0' + datestr[-7:])
-      datestr = datestr.replace('ET,','EST,')
-      item['gametime'] = datetime.strptime(datestr,'%I:%M %p %Z, %B %d, %Y')
+      datestr = datestr.replace('ET,','')
+      item['gametime'] = datetime.strptime(datestr,'%I:%M %p  %B %d, %Y')
       item['gameid'] = response.url.split('=')[-1]
 
       # Player stats

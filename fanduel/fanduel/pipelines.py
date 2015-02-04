@@ -9,13 +9,19 @@ import MySQLdb,csv
 from datetime import date
 from cbbplayer import Player
 
+
 class FanduelPipeline(object):
+
+  model_thresh = 8
+  model_loss = 'l1'
+  model = 'en'
+
   db = MySQLdb.connect("localhost","root","purplepants123","cbb",charset="utf8")
-  fout = open('/Users/jesseg/Documents/fantasy/cbb/data/predictions.csv','wb')
+  fout = open('/Users/jesseg/Documents/fantasy/cbb/data/predictions%i_%s_%s.csv'%(model_thresh,model_loss,model),'wb')
 
   fout.write('Position,Player,Team,Opponent,isHome,AVGPoints,PredictedPoints,Cost\n')
-
   fskipped = open('/Users/jesseg/Documents/fantasy/cbb/data/skipped.csv','wb')
+  k = 0
 
   def gather_player_data(self, pid, item):
     c = self.db.cursor()
@@ -23,10 +29,9 @@ class FanduelPipeline(object):
     tid = c.fetchone()[0]
     c.execute("""SELECT tid FROM teams where fanduel = %s""",(item['opp'],))
     oppid = c.fetchone()[0]
-    P = Player(pid,tid,item['home'],oppid)
+    P = Player(pid,tid,item['home'],oppid,self.model_thresh,self.model_loss,self.model)
     X = P.load_all_data()
     prediction = P.predict(X)
-
     self.fout.write('%s,"%s",%s,%s,%i,%.2f,%.2f,"%s"\n'%(item['position'],item['name'],item['team'],item['opp'],item['home'],X[0],prediction,item['salary']))
     print 'gathering player data'
 

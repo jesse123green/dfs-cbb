@@ -11,7 +11,7 @@ class fanduelSpider(scrapy.Spider):
     name = "fanduel"
     allowed_domains = ["fanduel.com"]
 
-    start_urls = ["https://www.fanduel.com/e/Game/11450?tableId=9780663&fromLobby=true"]
+    start_urls = ["https://www.fanduel.com/e/Game/11566?tableId=10303267&fromLobby=true"]
 
     def parse(self, response):
 
