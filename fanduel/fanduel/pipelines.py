@@ -13,11 +13,11 @@ from cbbplayer import Player
 class FanduelPipeline(object):
 
   model_thresh = 8
-  model_loss = 'l1'
+  model_loss = 'l2'
   model = 'en'
 
   db = MySQLdb.connect("localhost","root","purplepants123","cbb",charset="utf8")
-  fout = open('/Users/jesseg/Documents/fantasy/cbb/data/predictions%i_%s_%s.csv'%(model_thresh,model_loss,model),'wb')
+  fout = open('/Users/jesseg/Documents/fantasy/cbb/data/predictions/predictions%i_%s_%s.csv'%(model_thresh,model_loss,model),'wb')
 
   fout.write('Position,Player,Team,Opponent,isHome,AVGPoints,PredictedPoints,Cost\n')
   fskipped = open('/Users/jesseg/Documents/fantasy/cbb/data/skipped.csv','wb')
@@ -49,7 +49,7 @@ class FanduelPipeline(object):
     if (result is not None) and (item['isEligible']):
       self.gather_player_data(result[0],item)
     else:
-      query = """SELECT pid,tid FROM players WHERE name LIKE '%%%s%%' OR name LIKE '%%%s%%' """%(item['name'],item['name'].replace('.','').replace(',',''))
+      query = """SELECT pid,tid FROM players WHERE name LIKE "%%%s%%" OR name LIKE "%%%s%%" """%(item['name'],item['name'].replace('.','').replace(',',''))
       print query
       c.execute(query)
       result = c.fetchall()

@@ -12,6 +12,7 @@ from sklearn.svm import SVC,SVR
 from sklearn.grid_search import GridSearchCV
 from time import time
 from operator import itemgetter
+from sklearn.neural_network.multilayer_perceptron import MultilayerPerceptronRegressor as MPR
 from cbb import CBB
 
 # Utility function to report best scores
@@ -26,13 +27,17 @@ def report(grid_scores, n_top=3):
         print("")
 
 
-X = pickle.load(open('/Users/jesseg/Documents/fantasy/cbb/data_time_series/dataX_5all.p','rb'))
-y = pickle.load(open('/Users/jesseg/Documents/fantasy/cbb/data_time_series/datay_5all.p','rb'))
+X = pickle.load(open('/Users/jesseg/Documents/fantasy/cbb/data_time_series/dataX_5minavg_Feb12.p','rb'))
+y = pickle.load(open('/Users/jesseg/Documents/fantasy/cbb/data_time_series/datay_5minavg_Feb12.p','rb'))
 
 i1  = (X[:,0]>8)
 
 y = y[i1]
 X = X[i1,:]
+
+X_avg = X[:,0]
+
+# X = X[:,0:20]
 
 # y = y[-10000:]
 # X = X[-10000:,:]
@@ -42,13 +47,20 @@ X = X[i1,:]
 
 print 'Train data shape:',X.shape
 
+max_iter = 200
+eta0 = .0001
+
 clf = Pipeline([
 ('scale', preprocessing.StandardScaler()),
 # ('classification', SVR(kernel='linear',C=.003)),
 # ('classification', SVR(kernel='rbf',C=3,gamma=.001)),
 # ('classification', RF(n_estimators=250,n_jobs=3))
-('classification', ElasticNet(alpha=.05,l1_ratio=.05,max_iter=5000))
+('classification', ElasticNet(alpha=.05,l1_ratio=.1,max_iter=5000))
+# ('classification', MPR(algorithm='sgd',eta0=eta0,n_hidden=2500,max_iter=max_iter,shuffle=True,random_state=11,activation="tanh",verbose=True))
 ])
+
+print 'max_iter:',max_iter
+print 'eta0:',eta0
 
 start = time()
 
@@ -56,8 +68,9 @@ C = CBB()
 
 cv = cross_validation.ShuffleSplit(X.shape[0], n_iter=10,test_size=0.2, random_state=12)
 
+
 score = C.train_predict(clf,X,y,cv)
 
 
 print 'Accuracy score: %.2f\n'%(score)
-print "Accuracy using unweighted fp mean: %.2f"%mean_absolute_error(X[:,0],y)
+print "Accuracy using unweighted fp mean: %.2f"%mean_squared_error(X_avg,y)

@@ -48,20 +48,32 @@ class CBB():
     days = c.fetchone()
 
     k = 0
-    for aday in self.daterange(days[1]-timedelta(31),days[1]+timedelta(1)):
+    for aday in self.daterange(days[1]-timedelta(3),days[1]+timedelta(1)):
     # for aday in self.daterange(days[0],days[1]+timedelta(1)):
-      # c.execute("SELECT today.pid,today.gid,(today.pts+today.reb*1.2+today.ast*1.5+today.blk*2+today.stl*2-today.turnovers) fp,hist.avg_fgm,hist.avg_fga,hist.avg_tpm,hist.avg_tpa,hist.avg_ftm,hist.avg_fta,hist.avg_oreb,hist.avg_dreb,hist.avg_reb,hist.avg_ast,hist.avg_stl,hist.avg_blk,hist.avg_turnovers,hist.avg_pf,hist.avg_pts FROM (select pid,avg(fgm) avg_fgm,avg(fga) avg_fga,avg(tpm) avg_tpm,avg(tpa) avg_tpa,avg(ftm) avg_ftm,avg(fta) avg_fta,avg(oreb) avg_oreb,avg(dreb) avg_dreb,avg(reb) avg_reb,avg(ast) avg_ast,avg(stl) avg_stl,avg(blk) avg_blk,avg(turnovers) avg_turnovers,avg(pf) avg_pf,avg(pts) avg_pts from playerstats,games WHERE games.gid=playerstats.gid AND time < %s group by pid having count(pid) > 5) AS hist,(SELECT games.gid,pid,pts,reb,ast,blk,stl,turnovers FROM playerstats,games WHERE games.gid=playerstats.gid and date(time) = %s) AS today WHERE hist.pid = today.pid order by today.gid,today.pid;",
-      # (aday,aday))
+
+      ## Baseline
       c.execute("SELECT today.pid,today.gid,(today.pts+today.reb*1.2+today.ast*1.5+today.blk*2+today.stl*2-today.turnovers) fp,\
-      (hist.avg_pts+hist.avg_reb*1.2+hist.avg_ast*1.5+hist.avg_blk*2+hist.avg_stl*2-hist.avg_turnovers) fph,hist.avg_fgm,hist.avg_fga,hist.avg_tpm,hist.avg_tpa,hist.avg_ftm,hist.avg_fta,hist.avg_oreb,hist.avg_dreb,hist.avg_reb,hist.avg_ast,hist.avg_stl,hist.avg_blk,hist.avg_turnovers,hist.avg_pf,hist.avg_pts FROM (select pid,avg(fgm) avg_fgm,avg(fga) avg_fga,avg(tpm) avg_tpm,avg(tpa) avg_tpa,avg(ftm) avg_ftm,avg(fta) avg_fta,avg(oreb) avg_oreb,avg(dreb) avg_dreb,avg(reb) avg_reb,avg(ast) avg_ast,avg(stl) avg_stl,avg(blk) avg_blk,avg(turnovers) avg_turnovers,avg(pf) avg_pf,avg(pts) avg_pts from playerstats,games WHERE games.gid=playerstats.gid AND time < %s group by pid having count(pid) > %s) AS hist,(SELECT games.gid,pid,pts,reb,ast,blk,stl,turnovers FROM playerstats,games WHERE games.gid=playerstats.gid and date(time) = %s) AS today WHERE hist.pid = today.pid order by today.gid,today.pid;",
+      (hist.avg_pts+hist.avg_reb*1.2+hist.avg_ast*1.5+hist.avg_blk*2+hist.avg_stl*2-hist.avg_turnovers) fph,hist.avg_fgm,hist.avg_fga,hist.avg_tpm,hist.avg_tpa,hist.avg_ftm,hist.avg_fta,hist.avg_oreb,hist.avg_dreb,hist.avg_reb,hist.avg_ast,hist.avg_stl,hist.avg_blk,hist.avg_turnovers,hist.avg_pf,hist.avg_pts FROM (select pid, avg(fgm) avg_fgm,avg(fga) avg_fga,avg(tpm) avg_tpm,avg(tpa) avg_tpa,avg(ftm) avg_ftm,avg(fta) avg_fta,avg(oreb) avg_oreb,avg(dreb) avg_dreb,avg(reb) avg_reb,avg(ast) avg_ast,avg(stl) avg_stl,avg(blk) avg_blk,avg(turnovers) avg_turnovers,avg(pf) avg_pf,avg(pts) avg_pts from playerstats,games WHERE games.gid=playerstats.gid AND time < %s group by pid having count(pid) > %s) AS hist,(SELECT games.gid,pid,pts,reb,ast,blk,stl,turnovers FROM playerstats,games WHERE games.gid=playerstats.gid and date(time) = %s) AS today WHERE hist.pid = today.pid order by today.gid,today.pid;",
       (aday,min_games,aday))
-      #
-      # c.execute("SELECT today.pid,today.gid,(today.pts+today.reb*1.2+today.ast*1.5+today.blk*2+today.stl*2-today.turnovers) fp,(hist.avg_pts+hist.avg_reb*1.2+hist.avg_ast*1.5+hist.avg_blk*2+hist.avg_stl*2-hist.avg_turnovers) fph FROM (select pid,avg(fgm) avg_fgm,avg(fga) avg_fga,avg(tpm) avg_tpm,avg(tpa) avg_tpa,avg(ftm) avg_ftm,avg(fta) avg_fta,avg(oreb) avg_oreb,avg(dreb) avg_dreb,avg(reb) avg_reb,avg(ast) avg_ast,avg(stl) avg_stl,avg(blk) avg_blk,avg(turnovers) avg_turnovers,avg(pf) avg_pf,avg(pts) avg_pts from playerstats,games WHERE games.gid=playerstats.gid AND time < %s group by pid having count(pid) > 5) AS hist,(SELECT games.gid,pid,pts,reb,ast,blk,stl,turnovers FROM playerstats,games WHERE games.gid=playerstats.gid and date(time) = %s) AS today WHERE hist.pid = today.pid order by today.gid,today.pid;",
-      # (aday,aday))
+
+
+      ## Minutes added
+      # c.execute("SELECT today.pid,today.gid,(today.pts+today.reb*1.2+today.ast*1.5+today.blk*2+today.stl*2-today.turnovers) fp,\
+      # (hist.avg_pts+hist.avg_reb*1.2+hist.avg_ast*1.5+hist.avg_blk*2+hist.avg_stl*2-hist.avg_turnovers) fph,hist.avg_min,hist.avg_fgm,hist.avg_fga,hist.avg_tpm,hist.avg_tpa,hist.avg_ftm,hist.avg_fta,hist.avg_oreb,hist.avg_dreb,hist.avg_reb,hist.avg_ast,hist.avg_stl,hist.avg_blk,hist.avg_turnovers,hist.avg_pf,hist.avg_pts FROM (select pid,avg(min) avg_min, avg(fgm) avg_fgm,avg(fga) avg_fga,avg(tpm) avg_tpm,avg(tpa) avg_tpa,avg(ftm) avg_ftm,avg(fta) avg_fta,avg(oreb) avg_oreb,avg(dreb) avg_dreb,avg(reb) avg_reb,avg(ast) avg_ast,avg(stl) avg_stl,avg(blk) avg_blk,avg(turnovers) avg_turnovers,avg(pf) avg_pf,avg(pts) avg_pts from playerstats,games WHERE playerstats.min IS NOT NULL and games.gid=playerstats.gid AND time < %s group by pid having count(pid) > %s) AS hist,(SELECT games.gid,pid,pts,reb,ast,blk,stl,turnovers FROM playerstats,games WHERE games.gid=playerstats.gid and date(time) = %s) AS today WHERE hist.pid = today.pid order by today.gid,today.pid;",
+      # (aday,min_games,aday))
+
+      fh = 0
       for d in c.fetchall():
         self.feature_headers.append(d[:2])
         X.append(d[3:])
         y.append(d[2])
+        # print type(d[0]),d[0]
+      #   if d[0] == '3136776':
+      #     print 'Found him!'
+      #     fh = 1
+      #     break
+      # if fh == 1:
+      #   break
 
     return np.array(X,dtype=float),np.array(y,dtype=float)
 
@@ -128,8 +140,9 @@ class CBB():
     X_trim = []
     k = 0
     for row in self.feature_headers:
-      c.execute("SELECT tid,home,away FROM games,players WHERE games.gid = %s and players.pid = %s",(row[1],row[0]))
+      c.execute("SELECT tid,home,away,time FROM games,players WHERE games.gid = %s and players.pid = %s",(row[1],row[0]))
       result = c.fetchone()
+      time = result[3]
       if result[0] == result[1]:
         team = result[0]
         opp = result[2]
@@ -144,7 +157,11 @@ class CBB():
       else:
         teamid = opp
 
-      c.execute("SELECT sum(fgm)/count(DISTINCT(histgames.gid)) avg_fgm,sum(fga)/count(DISTINCT(histgames.gid)) avg_fga,sum(tpm)/count(DISTINCT(histgames.gid)) avg_tpm,sum(tpa)/count(DISTINCT(histgames.gid)) avg_tpa,sum(ftm)/count(DISTINCT(histgames.gid)) avg_ftm,sum(fta)/count(DISTINCT(histgames.gid)) avg_fta,sum(oreb)/count(DISTINCT(histgames.gid)) avg_oreb,sum(dreb)/count(DISTINCT(histgames.gid)) avg_dreb,sum(reb)/count(DISTINCT(histgames.gid)) avg_reb,sum(ast)/count(DISTINCT(histgames.gid)) avg_ast,sum(stl)/count(DISTINCT(histgames.gid)) avg_stl,sum(blk)/count(DISTINCT(histgames.gid)) avg_blk,sum(turnovers)/count(DISTINCT(histgames.gid)) avg_turnovers,sum(pf)/count(DISTINCT(histgames.gid)) avg_pf,sum(pts)/count(DISTINCT(histgames.gid)) avg_pts  FROM  (SELECT gid FROM games,(SELECT time from games where gid = %s) as gametime WHERE games.time < gametime.time) as histgames,playerstats,players WHERE playerstats.pid = players.pid and histgames.gid = playerstats.gid and players.tid=%s",\
+      # c.execute("SELECT sum(fgm)/count(DISTINCT(histgames.gid)) avg_fgm,sum(fga)/count(DISTINCT(histgames.gid)) avg_fga,sum(tpm)/count(DISTINCT(histgames.gid)) avg_tpm,sum(tpa)/count(DISTINCT(histgames.gid)) avg_tpa,sum(ftm)/count(DISTINCT(histgames.gid)) avg_ftm,sum(fta)/count(DISTINCT(histgames.gid)) avg_fta,sum(oreb)/count(DISTINCT(histgames.gid)) avg_oreb,sum(dreb)/count(DISTINCT(histgames.gid)) avg_dreb,sum(reb)/count(DISTINCT(histgames.gid)) avg_reb,sum(ast)/count(DISTINCT(histgames.gid)) avg_ast,sum(stl)/count(DISTINCT(histgames.gid)) avg_stl,sum(blk)/count(DISTINCT(histgames.gid)) avg_blk,sum(turnovers)/count(DISTINCT(histgames.gid)) avg_turnovers,sum(pf)/count(DISTINCT(histgames.gid)) avg_pf,sum(pts)/count(DISTINCT(histgames.gid)) avg_pts  \
+      #   FROM games as histgames,playerstats,players WHERE histgames.time < %s and playerstats.pid = players.pid and histgames.gid = playerstats.gid and players.tid=%s",\
+      # (time,teamid))
+      c.execute("SELECT sum(fgm)/count(DISTINCT(histgames.gid)) avg_fgm,sum(fga)/count(DISTINCT(histgames.gid)) avg_fga,sum(tpm)/count(DISTINCT(histgames.gid)) avg_tpm,sum(tpa)/count(DISTINCT(histgames.gid)) avg_tpa,sum(ftm)/count(DISTINCT(histgames.gid)) avg_ftm,sum(fta)/count(DISTINCT(histgames.gid)) avg_fta,sum(oreb)/count(DISTINCT(histgames.gid)) avg_oreb,sum(dreb)/count(DISTINCT(histgames.gid)) avg_dreb,sum(reb)/count(DISTINCT(histgames.gid)) avg_reb,sum(ast)/count(DISTINCT(histgames.gid)) avg_ast,sum(stl)/count(DISTINCT(histgames.gid)) avg_stl,sum(blk)/count(DISTINCT(histgames.gid)) avg_blk,sum(turnovers)/count(DISTINCT(histgames.gid)) avg_turnovers,sum(pf)/count(DISTINCT(histgames.gid)) avg_pf,sum(pts)/count(DISTINCT(histgames.gid)) avg_pts  \
+        FROM (SELECT gid FROM games,(SELECT time from games where gid = %s) as gametime WHERE games.time < gametime.time) as histgames,playerstats,players WHERE playerstats.pid = players.pid and histgames.gid = playerstats.gid and players.tid=%s",\
       (row[1],teamid))
       # print row[0],row[1],teamid,c.fetchone()
       result = c.fetchone()
@@ -208,7 +225,16 @@ class CBB():
 
     for row in self.feature_headers:
       stats = []
+
+      ## Minutes included
+      # c.execute("SELECT tid,home,away,date(cgame.time),(pts+reb*1.2+ast*1.5+blk*2+stl*2-turnovers) as fp,min,fgm,fga,tpm,tpa,ftm,fta,oreb,dreb,reb,ast,stl,blk,turnovers,pf,pts FROM games,players,playerstats,(SELECT time from games where gid = %s) as cgame WHERE playerstats.min IS NOT NULL and games.time < cgame.time and playerstats.pid = %s and players.pid = playerstats.pid and games.gid=playerstats.gid order by games.time desc LIMIT %s",(row[1],row[0],n))
+
+      ## Fantasy points included
+      # c.execute("SELECT tid,home,away,date(cgame.time),(pts+reb*1.2+ast*1.5+blk*2+stl*2-turnovers) as fp,fgm,fga,tpm,tpa,ftm,fta,oreb,dreb,reb,ast,stl,blk,turnovers,pf,pts FROM games,players,playerstats,(SELECT time from games where gid = %s) as cgame WHERE games.time < cgame.time and playerstats.pid = %s and players.pid = playerstats.pid and games.gid=playerstats.gid order by games.time desc LIMIT %s",(row[1],row[0],n))
+      
+      ## Baseline
       c.execute("SELECT tid,home,away,date(cgame.time),fgm,fga,tpm,tpa,ftm,fta,oreb,dreb,reb,ast,stl,blk,turnovers,pf,pts FROM games,players,playerstats,(SELECT time from games where gid = %s) as cgame WHERE games.time < cgame.time and playerstats.pid = %s and players.pid = playerstats.pid and games.gid=playerstats.gid order by games.time desc LIMIT %s",(row[1],row[0],n))
+
       result = c.fetchall()
       for game in result:
         if game[0] == game[1]:
@@ -220,7 +246,10 @@ class CBB():
         # print opp
         c2.execute("SELECT rank FROM rankings where tid=%s and rankdate >= %s order by rankdate asc",(opp,game[3]))
         game2 = list(game[4:])
+
         game2.append(home)
+
+        # game2.append(1.*game[5]/X[k,1])  ## percentage change in minutes
 
         _rank = c2.fetchone()
         if _rank == None:
@@ -228,11 +257,14 @@ class CBB():
         else:
           rank = _rank[0]
         game2.append(rank)
+
+        game_len = len(game2)
+
         stats.append(game2)
       #   print game2
       # print row
       # print '-'*50
-      all_stats.append(np.reshape(stats,(17*n,)))
+      all_stats.append(np.reshape(stats,(game_len*n,)))
 
     return self.combine_features(X,all_stats)
 
@@ -289,10 +321,10 @@ class CBB():
         # y_test = np.exp(y_test)
 
         y_pred = clf.predict(X_test)
-        # all_scores.append(mean_squared_error(y_test,y_pred))
-        all_scores.append(mean_absolute_error(y_test,y_pred))
+        all_scores.append(mean_squared_error(y_test,y_pred))
+        # all_scores.append(mean_absolute_error(y_test,y_pred))
 
-
+    print all_scores
     return np.mean(all_scores)
 
 if __name__ == "__main__":
@@ -303,12 +335,12 @@ if __name__ == "__main__":
   ti= time.time()
   H = CBB()
 
-  print 'Loading intial data...'
+  print 'Loading historical player stats...'
   X,y = H.load_data()
   print 'Finished after %.2f mins\n'%((time.time()-t)/60.)
   ti= time.time()
 
-  print 'Adding home/away...'
+  print 'Adding home/away for predicted game...'
   X,y = H.home_away(X,y)
   print 'Finished after %.2f mins\n'%((time.time()-ti)/60.)
   ti= time.time()
@@ -318,10 +350,12 @@ if __name__ == "__main__":
   print 'Finished after %.2f mins\n'%((time.time()-ti)/60.)
   ti= time.time()
 
-  print 'Adding player game stats...'
+
+  print 'Adding player game stats for last n games...'
   X = H.player_last_n_games(X,5)
   print 'Finished after %.2f mins\n'%((time.time()-ti)/60.)
   ti= time.time()
+
 
   print 'Adding team stats...'
   X,y = H.add_team_averages(X,y,0)
@@ -343,16 +377,22 @@ if __name__ == "__main__":
   # print 'Finished after %.2f mins\n'%((time.time()-ti)/60.)
   # ti= time.time()
 
+  # print H.feature_headers[-1]
+  # print X[-1,:]
+
   print 'Total time: %.2f mins\n'%((time.time()-t)/60.)
   ti= time.time()
+
+
 
   print 'Train data shape:',X.shape
   print "Accuracy using unweighted fp mean: %.2f"%mean_squared_error(X[:,0],y)
 
-  pickle.dump(X,open('/Users/jesseg/Documents/fantasy/cbb/data_time_series/dataX_5all_2.p','wb'))
-  pickle.dump(y,open('/Users/jesseg/Documents/fantasy/cbb/data_time_series/datay_5all_2.p','wb'))
 
+  pickle.dump(X,open('/Users/jesseg/Documents/fantasy/cbb/data_time_series/dataX_5baseline_Feb12.p','wb'))
+  pickle.dump(y,open('/Users/jesseg/Documents/fantasy/cbb/data_time_series/datay_5baseline_Feb12.p','wb'))
   sys.exit()
+
   ## Random Forest Model
   # clf = RF(n_estimators=250, n_jobs=3,bootstrap=False,min_samples_leaf=1, min_samples_split=4, criterion='entropy', max_features=30, max_depth=None)
   # clf = RF(n_estimators = 250, n_jobs = 3,max_features=30)

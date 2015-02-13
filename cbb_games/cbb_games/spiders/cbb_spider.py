@@ -32,7 +32,6 @@ class cbbgamesSpider(scrapy.Spider):
       print '* '*50
       item = CbbGamesItem()
       item['gameday'] = datetime.strptime(response.url.split('=')[-1],'%Y%m%d')
-
       for sel in response.xpath("//tr[contains(@class, 'evenrow')]"):
         links = sel.xpath("td/a[contains(@href, 'boxscore')]/@href").extract()
         for link in links:

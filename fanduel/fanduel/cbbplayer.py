@@ -29,7 +29,7 @@ class Player():
     self.tid = tid
     self.home = home
     self.oppid = oppid
-    self.clf = pickle.load(open('/Users/jesseg/Documents/fantasy/cbb/data/model_5all_%i_%s_%s.p'%(model_thresh,model_loss,model),'rb'))
+    self.clf = pickle.load(open('/Users/jesseg/Documents/fantasy/cbb/data/models/model_5all_%i_%s_%s.p'%(model_thresh,model_loss,model),'rb'))
 
   def load_all_data(self):
     X = []
@@ -46,7 +46,10 @@ class Player():
   def load_player_stats(self,X):
     c = self.db.cursor()
 
-    c.execute("SELECT (avg(pts)+avg(reb)*1.2+avg(ast)*1.5+avg(blk)*2+avg(stl)*2-avg(turnovers)) fph,avg(fgm),avg(fga),avg(tpm),avg(tpa),avg(ftm),avg(fta),avg(oreb),avg(dreb),avg(reb),avg(ast),avg(stl),avg(blk),avg(turnovers),avg(pf),avg(pts) FROM playerstats WHERE pid = %s GROUP BY pid",
+    # c.execute("SELECT (avg(pts)+avg(reb)*1.2+avg(ast)*1.5+avg(blk)*2+avg(stl)*2-avg(turnovers)) fph,avg(fgm),avg(fga),avg(tpm),avg(tpa),avg(ftm),avg(fta),avg(oreb),avg(dreb),avg(reb),avg(ast),avg(stl),avg(blk),avg(turnovers),avg(pf),avg(pts) FROM playerstats WHERE pid = %s GROUP BY pid",
+    # (self.pid,))
+
+    c.execute("SELECT (avg(pts)+avg(reb)*1.2+avg(ast)*1.5+avg(blk)*2+avg(stl)*2-avg(turnovers)) fph,avg(min),avg(fgm),avg(fga),avg(tpm),avg(tpa),avg(ftm),avg(fta),avg(oreb),avg(dreb),avg(reb),avg(ast),avg(stl),avg(blk),avg(turnovers),avg(pf),avg(pts) FROM playerstats WHERE pid = %s GROUP BY pid",
     (self.pid,))
 
     result = c.fetchone()
@@ -109,7 +112,8 @@ class Player():
 
 
     stats = []
-    c.execute("SELECT tid,home,away,date(games.time),fgm,fga,tpm,tpa,ftm,fta,oreb,dreb,reb,ast,stl,blk,turnovers,pf,pts FROM games,players,playerstats WHERE playerstats.pid = %s and players.pid = playerstats.pid and games.gid=playerstats.gid order by games.time desc LIMIT %s",(self.pid,n))
+    c.execute("SELECT tid,home,away,date(games.time),(pts+reb*1.2+ast*1.5+blk*2+stl*2-turnovers) fph,min,fgm,fga,tpm,tpa,ftm,fta,oreb,dreb,reb,ast,stl,blk,turnovers,pf,pts FROM games,players,playerstats WHERE playerstats.pid = %s and players.pid = playerstats.pid and games.gid=playerstats.gid order by games.time desc LIMIT %s",(self.pid,n))
+    # c.execute("SELECT tid,home,away,date(games.time),fgm,fga,tpm,tpa,ftm,fta,oreb,dreb,reb,ast,stl,blk,turnovers,pf,pts FROM games,players,playerstats WHERE playerstats.pid = %s and players.pid = playerstats.pid and games.gid=playerstats.gid order by games.time desc LIMIT %s",(self.pid,n))
     result = c.fetchall()
     for game in result:
       if game[0] == game[1]:
@@ -123,19 +127,29 @@ class Player():
       game2 = list(game[4:])
       game2.append(home)
 
+      # if float(X[1]) < 1e-10:
+      #   print "skipped!!!"
+      #   game2.append(0)
+      # else:
+      #   print 1.*float(game[5])/float(X[1])
+      #   game2.append(1.*float(game[5])/float(X[1]))
+
+
       _rank = c2.fetchone()
       if _rank == None:
         rank = 10
       else:
         rank = _rank[0]
       game2.append(rank)
+
       stats.append(game2)
+      stats_len = len(game2)
 
     if len(stats) < 5:
       print 'LESS THAN 5 DATA POINTS'
-      all_stats = np.zeros((17*n,))
+      all_stats = np.zeros((stats_len*n,))
     else:
-      all_stats = np.reshape(stats,(17*n,))
+      all_stats = np.reshape(stats,(stats_len*n,))
     # print '-'*50
     # print self.pid
     # print all_stats
@@ -148,7 +162,7 @@ class Player():
   def predict(self,X):
     ## Train model clf, predict probabilities, and determine best threshold
 
-    return self.clf.predict(X)
+    return self.clf.predict(np.array(X,dtype=float))
 
 if __name__ == "__main__":
 

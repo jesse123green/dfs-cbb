@@ -25,15 +25,15 @@ def report(grid_scores, n_top=3):
         print("")
 
 
-X = pickle.load(open('../data_time_series/dataX_5all.p','rb'))
-y = pickle.load(open('../data_time_series/datay_5all.p','rb'))
+X = pickle.load(open('/Users/jesseg/Documents/fantasy/cbb/data_time_series/dataX_5fp_Feb11.p','rb'))
+y = pickle.load(open('/Users/jesseg/Documents/fantasy/cbb/data_time_series/datay_5fp_Feb11.p','rb'))
 
 
-# i1  = (X[:,0]>8)
-# i2 = (y >= 1)
-#
-# y = y[i1]
-# X = X[i1,:]
+i1  = (X[:,0]>8)
+i2 = (y >= 1)
+
+y = y[i1]
+X = X[i1,:]
 
 print 'Train data shape:',X.shape
 
@@ -43,14 +43,14 @@ clf = Pipeline([
 ])
 
 param_grid = [
-  {'classification__alpha': np.arange(.05,1,.05), 'classification__l1_ratio': np.arange(.05,1,.05)}
+  {'classification__alpha': np.arange(.05,.5,.05), 'classification__l1_ratio': np.arange(.05,.5,.05)}
  ]
 
 start = time()
 
 cv = cross_validation.ShuffleSplit(X.shape[0], n_iter=10,test_size=0.2, random_state=12)
-# grid_search = GridSearchCV(clf, param_grid=param_grid,cv=cv,scoring='mean_squared_error')
-grid_search = GridSearchCV(clf, param_grid=param_grid,cv=cv,scoring='mean_absolute_error')
+# grid_search = GridSearchCV(clf, param_grid=param_grid,cv=cv,scoring='mean_absolute_error')
+grid_search = GridSearchCV(clf, param_grid=param_grid,cv=cv,scoring='mean_squared_error')
 grid_search.fit(X,y)
 
 print("GridSearchCV took %.2f seconds for %d candidate parameter settings."
