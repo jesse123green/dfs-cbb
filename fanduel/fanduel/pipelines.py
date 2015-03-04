@@ -13,8 +13,8 @@ from cbbplayer import Player
 class FanduelPipeline(object):
 
   model_thresh = 8
-  model_loss = 'l2'
-  model = 'en'
+  model_loss = 'l1'
+  model = 'svr'
 
   db = MySQLdb.connect("localhost","root","purplepants123","cbb",charset="utf8")
   fout = open('/Users/jesseg/Documents/fantasy/cbb/data/predictions/predictions%i_%s_%s.csv'%(model_thresh,model_loss,model),'wb')

@@ -29,16 +29,19 @@ class Player():
     self.tid = tid
     self.home = home
     self.oppid = oppid
+    self.pos = ''
     self.clf = pickle.load(open('/Users/jesseg/Documents/fantasy/cbb/data/models/model_5all_%i_%s_%s.p'%(model_thresh,model_loss,model),'rb'))
 
   def load_all_data(self):
     X = []
     X = self.load_player_stats(X)
+    X = self.position(X)
     X.append(self.home)
     X = self.add_team_rankings(X)
     X = self.player_last_n_games(X,5)
     X = self.add_team_averages(X,0)
     X = self.add_team_averages(X,1)
+    X = self.add_opp_defense_pos(X)
     # X = self.modulate_features(X)
 
     return X
@@ -55,6 +58,29 @@ class Player():
     result = c.fetchone()
     for x in result:
       X.append(x)
+
+    return X
+
+  def position(self,X):
+    c = self.db.cursor()
+
+    c.execute("SELECT pos FROM games,playerstats WHERE games.gid = playerstats.gid and playerstats.pid = %s order by time desc limit 1",(self.pid,))
+    result = c.fetchone()
+    self.pos = result[0]
+    if result[0] == 'C':
+      # print self.pid,self.pos
+      for p in [1,0,0]:
+        X.append(p)
+    elif result[0] == 'F':
+      # print self.pid,self.pos
+      for p in [0,1,0]:
+        X.append(p)
+    elif result[0] == 'G':
+      # print self.pid,self.pos
+      for p in [0,0,1]:
+        X.append(p)
+    else:
+      raise('bad position')
 
     return X
 
@@ -85,11 +111,12 @@ class Player():
       X.append(x)
     return X
 
-
   def add_team_rankings(self,X):
 
     c = self.db.cursor()
     c2 = self.db.cursor()
+
+
 
     c.execute("SELECT rank FROM rankings WHERE tid=%s and rankdate >= %s order by rankdate asc",(self.tid,date.today()))
     c2.execute("SELECT rank FROM rankings WHERE tid=%s and rankdate >= %s order by rankdate asc",(self.oppid,date.today()))
@@ -156,6 +183,23 @@ class Player():
 
     for s in all_stats:
       X.append(s)
+
+    return X
+
+  def add_opp_defense_pos(self,X):
+
+    c = self.db.cursor()
+    # print "SELECT sum(fgm)/count(DISTINCT(histgames.gid)) avg_fgm,sum(fga)/count(DISTINCT(histgames.gid)) avg_fga,sum(tpm)/count(DISTINCT(histgames.gid)) avg_tpm,sum(tpa)/count(DISTINCT(histgames.gid)) avg_tpa,sum(ftm)/count(DISTINCT(histgames.gid)) avg_ftm,sum(fta)/count(DISTINCT(histgames.gid)) avg_fta,sum(oreb)/count(DISTINCT(histgames.gid)) avg_oreb,sum(dreb)/count(DISTINCT(histgames.gid)) avg_dreb,sum(reb)/count(DISTINCT(histgames.gid)) avg_reb,sum(ast)/count(DISTINCT(histgames.gid)) avg_ast,sum(stl)/count(DISTINCT(histgames.gid)) avg_stl,sum(blk)/count(DISTINCT(histgames.gid)) avg_blk,sum(turnovers)/count(DISTINCT(histgames.gid)) avg_turnovers,sum(pf)/count(DISTINCT(histgames.gid)) avg_pf,sum(pts)/count(DISTINCT(histgames.gid)) avg_pts FROM (SELECT * FROM games where (home = %s or away = %s)) as histgames,playerstats,players WHERE playerstats.pid = players.pid and histgames.gid = playerstats.gid and players.tid != %s and playerstats.pos=%s"%(self.oppid,self.oppid,self.oppid,self.pos)
+
+    c.execute("SELECT sum(fgm)/count(DISTINCT(histgames.gid)) avg_fgm,sum(fga)/count(DISTINCT(histgames.gid)) avg_fga,sum(tpm)/count(DISTINCT(histgames.gid)) avg_tpm,sum(tpa)/count(DISTINCT(histgames.gid)) avg_tpa,sum(ftm)/count(DISTINCT(histgames.gid)) avg_ftm,sum(fta)/count(DISTINCT(histgames.gid)) avg_fta,sum(oreb)/count(DISTINCT(histgames.gid)) avg_oreb,sum(dreb)/count(DISTINCT(histgames.gid)) avg_dreb,sum(reb)/count(DISTINCT(histgames.gid)) avg_reb,sum(ast)/count(DISTINCT(histgames.gid)) avg_ast,sum(stl)/count(DISTINCT(histgames.gid)) avg_stl,sum(blk)/count(DISTINCT(histgames.gid)) avg_blk,sum(turnovers)/count(DISTINCT(histgames.gid)) avg_turnovers,sum(pf)/count(DISTINCT(histgames.gid)) avg_pf,sum(pts)/count(DISTINCT(histgames.gid)) avg_pts  \
+      FROM (SELECT * FROM games where (home = %s or away = %s)) as histgames,\
+      playerstats,players WHERE playerstats.pid = players.pid and histgames.gid = playerstats.gid and players.tid != %s and playerstats.pos=%s",\
+    (self.oppid,self.oppid,self.oppid,self.pos))
+
+      # print row[0],row[1],teamid,c.fetchone()
+    result = c.fetchone()
+    for x in result:
+      X.append(x)
 
     return X
 

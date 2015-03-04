@@ -27,8 +27,8 @@ def report(grid_scores, n_top=3):
         print("")
 
 
-X = pickle.load(open('/Users/jesseg/Documents/fantasy/cbb/data_time_series/dataX_5minavg_Feb12.p','rb'))
-y = pickle.load(open('/Users/jesseg/Documents/fantasy/cbb/data_time_series/datay_5minavg_Feb12.p','rb'))
+X = pickle.load(open('/Users/jesseg/Documents/fantasy/cbb/data_time_series/dataX_5posopp_Mar1.p','rb'))
+y = pickle.load(open('/Users/jesseg/Documents/fantasy/cbb/data_time_series/datay_5posopp_Mar1.p','rb'))
 
 i1  = (X[:,0]>8)
 
@@ -66,7 +66,7 @@ start = time()
 
 C = CBB()
 
-cv = cross_validation.ShuffleSplit(X.shape[0], n_iter=10,test_size=0.2, random_state=12)
+cv = cross_validation.ShuffleSplit(X.shape[0], n_iter=50,test_size=0.2, random_state=12)
 
 
 score = C.train_predict(clf,X,y,cv)
