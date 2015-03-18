@@ -27,7 +27,8 @@ class Player():
     self.db = MySQLdb.connect("localhost","root","purplepants123","cbb",charset="utf8")
     self.pid = pid
     self.tid = tid
-    self.home = home
+    # self.home = home
+    self.home = 0
     self.oppid = oppid
     self.pos = ''
     self.clf = pickle.load(open('/Users/jesseg/Documents/fantasy/cbb/data/models/model_5all_%i_%s_%s.p'%(model_thresh,model_loss,model),'rb'))
