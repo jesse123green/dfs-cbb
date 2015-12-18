@@ -32,19 +32,21 @@ print 'Train data shape:',X.shape
 
 clf = Pipeline([
 ('scale', preprocessing.StandardScaler()),
-('classification', SGDRegressor())
+('regression', SGDRegressor())
 ])
 
+#'regression__penalty': ['elasticnet'],'regression__l1_ratio':[.05,.15,.5,.85,.95]
+
 param_grid = [
-  {'classification__penalty': ['l1','l2','elasticnet'], 'classification__loss': ['squared_loss',\
-  'huber','epsilon_insensitive','squared_epsilon_insensitive'],\
-  'classification__alpha':[.00001,.0001,.001],'classification__shuffle':[True,False]}
+  {'regression__penalty': ['elasticnet'],'regression__l1_ratio':[.05,.15,.5,.85,.95],'regression__epsilon':[.01,.1,1],\
+   'regression__loss': ['epsilon_insensitive'],'regression__alpha':[.00001,.0001,.001],\
+   'regression__eta0':[.001,.01,.1]}
  ]
 
 start = time()
 
 cv = cross_validation.ShuffleSplit(X.shape[0], n_iter=10,test_size=0.2, random_state=12)
-grid_search = GridSearchCV(clf, param_grid=param_grid,cv=cv,scoring='mean_squared_error')
+grid_search = GridSearchCV(clf, param_grid=param_grid,cv=cv,scoring='mean_absolute_error')
 grid_search.fit(X,y)
 
 print("GridSearchCV took %.2f seconds for %d candidate parameter settings."

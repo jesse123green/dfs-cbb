@@ -40,7 +40,7 @@ class CBB():
       xnew = xnew.reshape(xnew.shape[0], 1)
     return np.concatenate((X,xnew),axis=1)
 
-  def load_data(self,min_games=6):
+  def load_data(self,min_games=10):
     c = self.db.cursor()
     X = []
     y = []
@@ -51,15 +51,12 @@ class CBB():
     for aday in self.daterange(days[1]-timedelta(30),days[1]+timedelta(1)):
     # for aday in self.daterange(days[0],days[1]+timedelta(1)):
 
-      ## Baseline
-      # c.execute("SELECT today.pid,today.gid,today.pos,(today.pts+today.reb*1.2+today.ast*1.5+today.blk*2+today.stl*2-today.turnovers) fp,\
-      # (hist.avg_pts+hist.avg_reb*1.2+hist.avg_ast*1.5+hist.avg_blk*2+hist.avg_stl*2-hist.avg_turnovers) fph,hist.avg_fgm,hist.avg_fga,hist.avg_tpm,hist.avg_tpa,hist.avg_ftm,hist.avg_fta,hist.avg_oreb,hist.avg_dreb,hist.avg_reb,hist.avg_ast,hist.avg_stl,hist.avg_blk,hist.avg_turnovers,hist.avg_pf,hist.avg_pts FROM (select pid, avg(fgm) avg_fgm,avg(fga) avg_fga,avg(tpm) avg_tpm,avg(tpa) avg_tpa,avg(ftm) avg_ftm,avg(fta) avg_fta,avg(oreb) avg_oreb,avg(dreb) avg_dreb,avg(reb) avg_reb,avg(ast) avg_ast,avg(stl) avg_stl,avg(blk) avg_blk,avg(turnovers) avg_turnovers,avg(pf) avg_pf,avg(pts) avg_pts from playerstats,games WHERE games.gid=playerstats.gid AND time < %s group by pid having count(pid) > %s) AS hist,(SELECT games.gid,pid,pts,reb,ast,blk,stl,turnovers,pos FROM playerstats,games WHERE games.gid=playerstats.gid and date(time) = %s) AS today WHERE hist.pid = today.pid order by today.gid,today.pid;",
-      # (aday,min_games,aday))
-
 
       ## Minutes added
       c.execute("SELECT today.pid,today.gid,today.pos,(today.pts+today.reb*1.2+today.ast*1.5+today.blk*2+today.stl*2-today.turnovers) fp,\
-      (hist.avg_pts+hist.avg_reb*1.2+hist.avg_ast*1.5+hist.avg_blk*2+hist.avg_stl*2-hist.avg_turnovers) fph,hist.avg_min,hist.avg_fgm,hist.avg_fga,hist.avg_tpm,hist.avg_tpa,hist.avg_ftm,hist.avg_fta,hist.avg_oreb,hist.avg_dreb,hist.avg_reb,hist.avg_ast,hist.avg_stl,hist.avg_blk,hist.avg_turnovers,hist.avg_pf,hist.avg_pts FROM (select pid,avg(min) avg_min, avg(fgm) avg_fgm,avg(fga) avg_fga,avg(tpm) avg_tpm,avg(tpa) avg_tpa,avg(ftm) avg_ftm,avg(fta) avg_fta,avg(oreb) avg_oreb,avg(dreb) avg_dreb,avg(reb) avg_reb,avg(ast) avg_ast,avg(stl) avg_stl,avg(blk) avg_blk,avg(turnovers) avg_turnovers,avg(pf) avg_pf,avg(pts) avg_pts from playerstats,games WHERE playerstats.min IS NOT NULL and games.gid=playerstats.gid AND time < %s group by pid having count(pid) > %s) AS hist,(SELECT games.gid,pid,pts,reb,ast,blk,stl,turnovers,pos FROM playerstats,games WHERE games.gid=playerstats.gid and date(time) = %s) AS today WHERE hist.pid = today.pid order by today.gid,today.pid;",
+      (hist.avg_pts+hist.avg_reb*1.2+hist.avg_ast*1.5+hist.avg_blk*2+hist.avg_stl*2-hist.avg_turnovers) fph,hist.avg_min,hist.avg_fgm,hist.avg_fga,hist.avg_tpm,hist.avg_tpa,hist.avg_ftm,hist.avg_fta,hist.avg_oreb,hist.avg_dreb,hist.avg_reb,hist.avg_ast,hist.avg_stl,hist.avg_blk,hist.avg_turnovers,hist.avg_pf,hist.avg_pts \
+      FROM (select pid,avg(min) avg_min, avg(fgm) avg_fgm,avg(fga) avg_fga,avg(tpm) avg_tpm,avg(tpa) avg_tpa,avg(ftm) avg_ftm,avg(fta) avg_fta,avg(oreb) avg_oreb,avg(dreb) avg_dreb,avg(reb) avg_reb,avg(ast) avg_ast,avg(stl) avg_stl,avg(blk) avg_blk,avg(turnovers) avg_turnovers,avg(pf) avg_pf,avg(pts) avg_pts from playerstats,games WHERE playerstats.min IS NOT NULL and games.gid=playerstats.gid AND time < %s group by pid having count(pid) > %s) AS hist,\
+      (SELECT games.gid,pid,pts,reb,ast,blk,stl,turnovers,pos FROM playerstats,games WHERE games.gid=playerstats.gid and date(time) = %s) AS today WHERE hist.pid = today.pid order by today.gid,today.pid;",
       (aday,min_games,aday))
 
       fh = 0
@@ -470,21 +467,3 @@ if __name__ == "__main__":
 
   pickle.dump(X,open('/Users/jesseg/Documents/fantasy/cbb/data_time_series/dataX_5posopp_Mar1.p','wb'))
   pickle.dump(y,open('/Users/jesseg/Documents/fantasy/cbb/data_time_series/datay_5posopp_Mar1.p','wb'))
-  sys.exit()
-
-  ## Random Forest Model
-  # clf = RF(n_estimators=250, n_jobs=3,bootstrap=False,min_samples_leaf=1, min_samples_split=4, criterion='entropy', max_features=30, max_depth=None)
-  # clf = RF(n_estimators = 250, n_jobs = 3,max_features=30)
-  # clf = LinearRegression()
-
-  clf = Pipeline([
-  ('scale', preprocessing.StandardScaler()),
-  ('classification', SVR())
-  ])
-
-  cv = cross_validation.ShuffleSplit(X.shape[0], n_iter=1,test_size=0.2,random_state=18)
-
-  score = H.train_predict(clf,X,y,cv)
-
-
-  print 'Accuracy score: %.2f\n'%(score)

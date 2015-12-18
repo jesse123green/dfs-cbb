@@ -14,7 +14,7 @@ class allgamesSpider(scrapy.Spider):
 
     # db = MySQLdb.connect("localhost","root","purplepants123","cbb",charset="utf8")
     # c = db.cursor()
-    # c.execute("""SELECT MAX(time) from games""")
+    c.execute("""SELECT MAX(time) from games""")
     # startdate = c.fetchone()[0].date()
     startdate = date.today()-timedelta(1)
     stopdate = date(2015,3,18)

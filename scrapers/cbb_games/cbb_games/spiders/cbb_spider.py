@@ -12,9 +12,9 @@ class cbbgamesSpider(scrapy.Spider):
     allowed_domains = ["espn.go.com"]
 
 
-    db = MySQLdb.connect("localhost","root","purplepants123","cbb",charset="utf8")
+    db = MySQLdb.connect("localhost","cbb","","cbb",charset="utf8")
     c = db.cursor()
-    c.execute("""SELECT MAX(time) from games WHERE gid != '-1'""")
+    c.execute("""SELECT MAX(gametime) from games""")
 
     result = c.fetchone()
     if len(result) == 0:
