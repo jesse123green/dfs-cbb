@@ -1,0 +1,1702 @@
+{
+    "grouped_entries": [
+        {
+            "entries": {
+                "count": 1, 
+                "_url": "https://api.fanduel.com/contests/13543-18587587/entries?user=2558430&roster=13543-282340200", 
+                "ids": [
+                    "292212178"
+                ], 
+                "rank": null, 
+                "prizes": {
+                    "total": 0.0, 
+                    "summary": "$0"
+                }
+            }, 
+            "roster": {
+                "_members": [
+                    "13543-282340200"
+                ], 
+                "_ref": "rosters.id"
+            }, 
+            "contest": {
+                "_members": [
+                    "13543-18587587"
+                ], 
+                "_ref": "contests.id"
+            }
+        }, 
+        {
+            "entries": {
+                "count": 1, 
+                "_url": "https://api.fanduel.com/contests/13543-18587092/entries?user=2558430&roster=13543-282340200", 
+                "ids": [
+                    "292230103"
+                ], 
+                "rank": null, 
+                "prizes": {
+                    "total": 0.0, 
+                    "summary": "$0"
+                }
+            }, 
+            "roster": {
+                "_members": [
+                    "13543-282340200"
+                ], 
+                "_ref": "rosters.id"
+            }, 
+            "contest": {
+                "_members": [
+                    "13543-18587092"
+                ], 
+                "_ref": "contests.id"
+            }
+        }, 
+        {
+            "entries": {
+                "count": 1, 
+                "_url": "https://api.fanduel.com/contests/13543-18583973/entries?user=2558430&roster=13543-282340200", 
+                "ids": [
+                    "292090647"
+                ], 
+                "rank": null, 
+                "prizes": {
+                    "total": 0.0, 
+                    "summary": "$0"
+                }
+            }, 
+            "roster": {
+                "_members": [
+                    "13543-282340200"
+                ], 
+                "_ref": "rosters.id"
+            }, 
+            "contest": {
+                "_members": [
+                    "13543-18583973"
+                ], 
+                "_ref": "contests.id"
+            }
+        }, 
+        {
+            "entries": {
+                "count": 1, 
+                "_url": "https://api.fanduel.com/contests/13543-18582945/entries?user=2558430&roster=13543-282340200", 
+                "ids": [
+                    "292090805"
+                ], 
+                "rank": null, 
+                "prizes": {
+                    "total": 0.0, 
+                    "summary": "$0"
+                }
+            }, 
+            "roster": {
+                "_members": [
+                    "13543-282340200"
+                ], 
+                "_ref": "rosters.id"
+            }, 
+            "contest": {
+                "_members": [
+                    "13543-18582945"
+                ], 
+                "_ref": "contests.id"
+            }
+        }, 
+        {
+            "entries": {
+                "count": 1, 
+                "_url": "https://api.fanduel.com/contests/13543-18582674/entries?user=2558430&roster=13543-282340200", 
+                "ids": [
+                    "292090604"
+                ], 
+                "rank": null, 
+                "prizes": {
+                    "total": 0.0, 
+                    "summary": "$0"
+                }
+            }, 
+            "roster": {
+                "_members": [
+                    "13543-282340200"
+                ], 
+                "_ref": "rosters.id"
+            }, 
+            "contest": {
+                "_members": [
+                    "13543-18582674"
+                ], 
+                "_ref": "contests.id"
+            }
+        }, 
+        {
+            "entries": {
+                "count": 1, 
+                "_url": "https://api.fanduel.com/contests/13543-18582074/entries?user=2558430&roster=13543-282340200", 
+                "ids": [
+                    "292090736"
+                ], 
+                "rank": null, 
+                "prizes": {
+                    "total": 0.0, 
+                    "summary": "$0"
+                }
+            }, 
+            "roster": {
+                "_members": [
+                    "13543-282340200"
+                ], 
+                "_ref": "rosters.id"
+            }, 
+            "contest": {
+                "_members": [
+                    "13543-18582074"
+                ], 
+                "_ref": "contests.id"
+            }
+        }, 
+        {
+            "entries": {
+                "count": 1, 
+                "_url": "https://api.fanduel.com/contests/13543-18580826/entries?user=2558430&roster=13543-282340200", 
+                "ids": [
+                    "292090690"
+                ], 
+                "rank": null, 
+                "prizes": {
+                    "total": 0.0, 
+                    "summary": "$0"
+                }
+            }, 
+            "roster": {
+                "_members": [
+                    "13543-282340200"
+                ], 
+                "_ref": "rosters.id"
+            }, 
+            "contest": {
+                "_members": [
+                    "13543-18580826"
+                ], 
+                "_ref": "contests.id"
+            }
+        }, 
+        {
+            "entries": {
+                "count": 1, 
+                "_url": "https://api.fanduel.com/contests/13543-18580594/entries?user=2558430&roster=13543-282340200", 
+                "ids": [
+                    "291931180"
+                ], 
+                "rank": null, 
+                "prizes": {
+                    "total": 0.0, 
+                    "summary": "$0"
+                }
+            }, 
+            "roster": {
+                "_members": [
+                    "13543-282340200"
+                ], 
+                "_ref": "rosters.id"
+            }, 
+            "contest": {
+                "_members": [
+                    "13543-18580594"
+                ], 
+                "_ref": "contests.id"
+            }
+        }, 
+        {
+            "entries": {
+                "count": 1, 
+                "_url": "https://api.fanduel.com/contests/13543-18579387/entries?user=2558430&roster=13543-282340200", 
+                "ids": [
+                    "291930665"
+                ], 
+                "rank": null, 
+                "prizes": {
+                    "total": 0.0, 
+                    "summary": "$0"
+                }
+            }, 
+            "roster": {
+                "_members": [
+                    "13543-282340200"
+                ], 
+                "_ref": "rosters.id"
+            }, 
+            "contest": {
+                "_members": [
+                    "13543-18579387"
+                ], 
+                "_ref": "contests.id"
+            }
+        }, 
+        {
+            "entries": {
+                "count": 1, 
+                "_url": "https://api.fanduel.com/contests/13543-18578932/entries?user=2558430&roster=13543-282340200", 
+                "ids": [
+                    "291931125"
+                ], 
+                "rank": null, 
+                "prizes": {
+                    "total": 0.0, 
+                    "summary": "$0"
+                }
+            }, 
+            "roster": {
+                "_members": [
+                    "13543-282340200"
+                ], 
+                "_ref": "rosters.id"
+            }, 
+            "contest": {
+                "_members": [
+                    "13543-18578932"
+                ], 
+                "_ref": "contests.id"
+            }
+        }, 
+        {
+            "entries": {
+                "count": 1, 
+                "_url": "https://api.fanduel.com/contests/13543-18578324/entries?user=2558430&roster=13543-282340200", 
+                "ids": [
+                    "291931380"
+                ], 
+                "rank": null, 
+                "prizes": {
+                    "total": 0.0, 
+                    "summary": "$0"
+                }
+            }, 
+            "roster": {
+                "_members": [
+                    "13543-282340200"
+                ], 
+                "_ref": "rosters.id"
+            }, 
+            "contest": {
+                "_members": [
+                    "13543-18578324"
+                ], 
+                "_ref": "contests.id"
+            }
+        }, 
+        {
+            "entries": {
+                "count": 1, 
+                "_url": "https://api.fanduel.com/contests/13543-18578111/entries?user=2558430&roster=13543-282340200", 
+                "ids": [
+                    "291931075"
+                ], 
+                "rank": null, 
+                "prizes": {
+                    "total": 0.0, 
+                    "summary": "$0"
+                }
+            }, 
+            "roster": {
+                "_members": [
+                    "13543-282340200"
+                ], 
+                "_ref": "rosters.id"
+            }, 
+            "contest": {
+                "_members": [
+                    "13543-18578111"
+                ], 
+                "_ref": "contests.id"
+            }
+        }, 
+        {
+            "entries": {
+                "count": 1, 
+                "_url": "https://api.fanduel.com/contests/13543-18576974/entries?user=2558430&roster=13543-282340200", 
+                "ids": [
+                    "291931337"
+                ], 
+                "rank": null, 
+                "prizes": {
+                    "total": 0.0, 
+                    "summary": "$0"
+                }
+            }, 
+            "roster": {
+                "_members": [
+                    "13543-282340200"
+                ], 
+                "_ref": "rosters.id"
+            }, 
+            "contest": {
+                "_members": [
+                    "13543-18576974"
+                ], 
+                "_ref": "contests.id"
+            }
+        }, 
+        {
+            "entries": {
+                "count": 1, 
+                "_url": "https://api.fanduel.com/contests/13543-18576361/entries?user=2558430&roster=13543-282340200", 
+                "ids": [
+                    "291931034"
+                ], 
+                "rank": null, 
+                "prizes": {
+                    "total": 0.0, 
+                    "summary": "$0"
+                }
+            }, 
+            "roster": {
+                "_members": [
+                    "13543-282340200"
+                ], 
+                "_ref": "rosters.id"
+            }, 
+            "contest": {
+                "_members": [
+                    "13543-18576361"
+                ], 
+                "_ref": "contests.id"
+            }
+        }, 
+        {
+            "entries": {
+                "count": 4, 
+                "_url": "https://api.fanduel.com/contests/13543-18527132/entries?user=2558430&roster=13543-282340200", 
+                "ids": [
+                    "291931809", 
+                    "291931823", 
+                    "291931838", 
+                    "291931855"
+                ], 
+                "rank": null, 
+                "prizes": {
+                    "total": 0.0, 
+                    "summary": "$0"
+                }
+            }, 
+            "roster": {
+                "_members": [
+                    "13543-282340200"
+                ], 
+                "_ref": "rosters.id"
+            }, 
+            "contest": {
+                "_members": [
+                    "13543-18527132"
+                ], 
+                "_ref": "contests.id"
+            }
+        }, 
+        {
+            "entries": {
+                "count": 1, 
+                "_url": "https://api.fanduel.com/contests/13543-18527123/entries?user=2558430&roster=13543-282340200", 
+                "ids": [
+                    "291931748"
+                ], 
+                "rank": null, 
+                "prizes": {
+                    "total": 0.0, 
+                    "summary": "$0"
+                }
+            }, 
+            "roster": {
+                "_members": [
+                    "13543-282340200"
+                ], 
+                "_ref": "rosters.id"
+            }, 
+            "contest": {
+                "_members": [
+                    "13543-18527123"
+                ], 
+                "_ref": "contests.id"
+            }
+        }
+    ], 
+    "_meta": {
+        "grouped_entries": {
+            "count": 16, 
+            "prize_total": 0.0, 
+            "stake_total": 25.0
+        }, 
+        "_primary_document": "grouped_entries"
+    }, 
+    "rosters": [
+        {
+            "grouped_entries": {
+                "count": 16, 
+                "_url": "https://api.fanduel.com/users/2558430/grouped-entries?roster=13543-282340200"
+            }, 
+            "last_used": "2015-11-12T18:30:55Z", 
+            "_url": "https://api.fanduel.com/users/2558430/rosters/13543-282340200", 
+            "name": "Roster 13543-282340200", 
+            "prize_total": 0.0, 
+            "fixture_list": {
+                "_members": [
+                    "13543"
+                ], 
+                "_ref": "fixture_lists.id"
+            }, 
+            "ppr": 27, 
+            "score": 0.0, 
+            "stake_total": 25.0, 
+            "entries": {
+                "count": 19
+            }, 
+            "lineup": [], 
+            "id": "13543-282340200"
+        }, 
+        {
+            "grouped_entries": {
+                "count": 16, 
+                "_url": "https://api.fanduel.com/users/2558430/grouped-entries?roster=13543-282340200"
+            }, 
+            "last_used": "2015-11-12T18:30:55Z", 
+            "_url": "https://api.fanduel.com/users/2558430/rosters/13543-282340200", 
+            "name": "Roster 13543-282340200", 
+            "prize_total": 0.0, 
+            "fixture_list": {
+                "_members": [
+                    "13543"
+                ], 
+                "_ref": "fixture_lists.id"
+            }, 
+            "ppr": 27, 
+            "score": 0.0, 
+            "stake_total": 25.0, 
+            "entries": {
+                "count": 19
+            }, 
+            "lineup": [], 
+            "id": "13543-282340200"
+        }, 
+        {
+            "grouped_entries": {
+                "count": 16, 
+                "_url": "https://api.fanduel.com/users/2558430/grouped-entries?roster=13543-282340200"
+            }, 
+            "last_used": "2015-11-12T18:30:55Z", 
+            "_url": "https://api.fanduel.com/users/2558430/rosters/13543-282340200", 
+            "name": "Roster 13543-282340200", 
+            "prize_total": 0.0, 
+            "fixture_list": {
+                "_members": [
+                    "13543"
+                ], 
+                "_ref": "fixture_lists.id"
+            }, 
+            "ppr": 27, 
+            "score": 0.0, 
+            "stake_total": 25.0, 
+            "entries": {
+                "count": 19
+            }, 
+            "lineup": [], 
+            "id": "13543-282340200"
+        }, 
+        {
+            "grouped_entries": {
+                "count": 16, 
+                "_url": "https://api.fanduel.com/users/2558430/grouped-entries?roster=13543-282340200"
+            }, 
+            "last_used": "2015-11-12T18:30:55Z", 
+            "_url": "https://api.fanduel.com/users/2558430/rosters/13543-282340200", 
+            "name": "Roster 13543-282340200", 
+            "prize_total": 0.0, 
+            "fixture_list": {
+                "_members": [
+                    "13543"
+                ], 
+                "_ref": "fixture_lists.id"
+            }, 
+            "ppr": 27, 
+            "score": 0.0, 
+            "stake_total": 25.0, 
+            "entries": {
+                "count": 19
+            }, 
+            "lineup": [], 
+            "id": "13543-282340200"
+        }, 
+        {
+            "grouped_entries": {
+                "count": 16, 
+                "_url": "https://api.fanduel.com/users/2558430/grouped-entries?roster=13543-282340200"
+            }, 
+            "last_used": "2015-11-12T18:30:55Z", 
+            "_url": "https://api.fanduel.com/users/2558430/rosters/13543-282340200", 
+            "name": "Roster 13543-282340200", 
+            "prize_total": 0.0, 
+            "fixture_list": {
+                "_members": [
+                    "13543"
+                ], 
+                "_ref": "fixture_lists.id"
+            }, 
+            "ppr": 27, 
+            "score": 0.0, 
+            "stake_total": 25.0, 
+            "entries": {
+                "count": 19
+            }, 
+            "lineup": [], 
+            "id": "13543-282340200"
+        }, 
+        {
+            "grouped_entries": {
+                "count": 16, 
+                "_url": "https://api.fanduel.com/users/2558430/grouped-entries?roster=13543-282340200"
+            }, 
+            "last_used": "2015-11-12T18:30:55Z", 
+            "_url": "https://api.fanduel.com/users/2558430/rosters/13543-282340200", 
+            "name": "Roster 13543-282340200", 
+            "prize_total": 0.0, 
+            "fixture_list": {
+                "_members": [
+                    "13543"
+                ], 
+                "_ref": "fixture_lists.id"
+            }, 
+            "ppr": 27, 
+            "score": 0.0, 
+            "stake_total": 25.0, 
+            "entries": {
+                "count": 19
+            }, 
+            "lineup": [], 
+            "id": "13543-282340200"
+        }, 
+        {
+            "grouped_entries": {
+                "count": 16, 
+                "_url": "https://api.fanduel.com/users/2558430/grouped-entries?roster=13543-282340200"
+            }, 
+            "last_used": "2015-11-12T18:30:55Z", 
+            "_url": "https://api.fanduel.com/users/2558430/rosters/13543-282340200", 
+            "name": "Roster 13543-282340200", 
+            "prize_total": 0.0, 
+            "fixture_list": {
+                "_members": [
+                    "13543"
+                ], 
+                "_ref": "fixture_lists.id"
+            }, 
+            "ppr": 27, 
+            "score": 0.0, 
+            "stake_total": 25.0, 
+            "entries": {
+                "count": 19
+            }, 
+            "lineup": [], 
+            "id": "13543-282340200"
+        }, 
+        {
+            "grouped_entries": {
+                "count": 16, 
+                "_url": "https://api.fanduel.com/users/2558430/grouped-entries?roster=13543-282340200"
+            }, 
+            "last_used": "2015-11-12T18:30:55Z", 
+            "_url": "https://api.fanduel.com/users/2558430/rosters/13543-282340200", 
+            "name": "Roster 13543-282340200", 
+            "prize_total": 0.0, 
+            "fixture_list": {
+                "_members": [
+                    "13543"
+                ], 
+                "_ref": "fixture_lists.id"
+            }, 
+            "ppr": 27, 
+            "score": 0.0, 
+            "stake_total": 25.0, 
+            "entries": {
+                "count": 19
+            }, 
+            "lineup": [], 
+            "id": "13543-282340200"
+        }, 
+        {
+            "grouped_entries": {
+                "count": 16, 
+                "_url": "https://api.fanduel.com/users/2558430/grouped-entries?roster=13543-282340200"
+            }, 
+            "last_used": "2015-11-12T18:30:55Z", 
+            "_url": "https://api.fanduel.com/users/2558430/rosters/13543-282340200", 
+            "name": "Roster 13543-282340200", 
+            "prize_total": 0.0, 
+            "fixture_list": {
+                "_members": [
+                    "13543"
+                ], 
+                "_ref": "fixture_lists.id"
+            }, 
+            "ppr": 27, 
+            "score": 0.0, 
+            "stake_total": 25.0, 
+            "entries": {
+                "count": 19
+            }, 
+            "lineup": [], 
+            "id": "13543-282340200"
+        }, 
+        {
+            "grouped_entries": {
+                "count": 16, 
+                "_url": "https://api.fanduel.com/users/2558430/grouped-entries?roster=13543-282340200"
+            }, 
+            "last_used": "2015-11-12T18:30:55Z", 
+            "_url": "https://api.fanduel.com/users/2558430/rosters/13543-282340200", 
+            "name": "Roster 13543-282340200", 
+            "prize_total": 0.0, 
+            "fixture_list": {
+                "_members": [
+                    "13543"
+                ], 
+                "_ref": "fixture_lists.id"
+            }, 
+            "ppr": 27, 
+            "score": 0.0, 
+            "stake_total": 25.0, 
+            "entries": {
+                "count": 19
+            }, 
+            "lineup": [], 
+            "id": "13543-282340200"
+        }, 
+        {
+            "grouped_entries": {
+                "count": 16, 
+                "_url": "https://api.fanduel.com/users/2558430/grouped-entries?roster=13543-282340200"
+            }, 
+            "last_used": "2015-11-12T18:30:55Z", 
+            "_url": "https://api.fanduel.com/users/2558430/rosters/13543-282340200", 
+            "name": "Roster 13543-282340200", 
+            "prize_total": 0.0, 
+            "fixture_list": {
+                "_members": [
+                    "13543"
+                ], 
+                "_ref": "fixture_lists.id"
+            }, 
+            "ppr": 27, 
+            "score": 0.0, 
+            "stake_total": 25.0, 
+            "entries": {
+                "count": 19
+            }, 
+            "lineup": [], 
+            "id": "13543-282340200"
+        }, 
+        {
+            "grouped_entries": {
+                "count": 16, 
+                "_url": "https://api.fanduel.com/users/2558430/grouped-entries?roster=13543-282340200"
+            }, 
+            "last_used": "2015-11-12T18:30:55Z", 
+            "_url": "https://api.fanduel.com/users/2558430/rosters/13543-282340200", 
+            "name": "Roster 13543-282340200", 
+            "prize_total": 0.0, 
+            "fixture_list": {
+                "_members": [
+                    "13543"
+                ], 
+                "_ref": "fixture_lists.id"
+            }, 
+            "ppr": 27, 
+            "score": 0.0, 
+            "stake_total": 25.0, 
+            "entries": {
+                "count": 19
+            }, 
+            "lineup": [], 
+            "id": "13543-282340200"
+        }, 
+        {
+            "grouped_entries": {
+                "count": 16, 
+                "_url": "https://api.fanduel.com/users/2558430/grouped-entries?roster=13543-282340200"
+            }, 
+            "last_used": "2015-11-12T18:30:55Z", 
+            "_url": "https://api.fanduel.com/users/2558430/rosters/13543-282340200", 
+            "name": "Roster 13543-282340200", 
+            "prize_total": 0.0, 
+            "fixture_list": {
+                "_members": [
+                    "13543"
+                ], 
+                "_ref": "fixture_lists.id"
+            }, 
+            "ppr": 27, 
+            "score": 0.0, 
+            "stake_total": 25.0, 
+            "entries": {
+                "count": 19
+            }, 
+            "lineup": [], 
+            "id": "13543-282340200"
+        }, 
+        {
+            "grouped_entries": {
+                "count": 16, 
+                "_url": "https://api.fanduel.com/users/2558430/grouped-entries?roster=13543-282340200"
+            }, 
+            "last_used": "2015-11-12T18:30:55Z", 
+            "_url": "https://api.fanduel.com/users/2558430/rosters/13543-282340200", 
+            "name": "Roster 13543-282340200", 
+            "prize_total": 0.0, 
+            "fixture_list": {
+                "_members": [
+                    "13543"
+                ], 
+                "_ref": "fixture_lists.id"
+            }, 
+            "ppr": 27, 
+            "score": 0.0, 
+            "stake_total": 25.0, 
+            "entries": {
+                "count": 19
+            }, 
+            "lineup": [], 
+            "id": "13543-282340200"
+        }, 
+        {
+            "grouped_entries": {
+                "count": 16, 
+                "_url": "https://api.fanduel.com/users/2558430/grouped-entries?roster=13543-282340200"
+            }, 
+            "last_used": "2015-11-12T18:30:55Z", 
+            "_url": "https://api.fanduel.com/users/2558430/rosters/13543-282340200", 
+            "name": "Roster 13543-282340200", 
+            "prize_total": 0.0, 
+            "fixture_list": {
+                "_members": [
+                    "13543"
+                ], 
+                "_ref": "fixture_lists.id"
+            }, 
+            "ppr": 27, 
+            "score": 0.0, 
+            "stake_total": 25.0, 
+            "entries": {
+                "count": 19
+            }, 
+            "lineup": [], 
+            "id": "13543-282340200"
+        }, 
+        {
+            "grouped_entries": {
+                "count": 16, 
+                "_url": "https://api.fanduel.com/users/2558430/grouped-entries?roster=13543-282340200"
+            }, 
+            "last_used": "2015-11-12T18:30:55Z", 
+            "_url": "https://api.fanduel.com/users/2558430/rosters/13543-282340200", 
+            "name": "Roster 13543-282340200", 
+            "prize_total": 0.0, 
+            "fixture_list": {
+                "_members": [
+                    "13543"
+                ], 
+                "_ref": "fixture_lists.id"
+            }, 
+            "ppr": 27, 
+            "score": 0.0, 
+            "stake_total": 25.0, 
+            "entries": {
+                "count": 19
+            }, 
+            "lineup": [], 
+            "id": "13543-282340200"
+        }
+    ], 
+    "fixture_lists": [
+        {
+            "status": {
+                "started": false, 
+                "final": false
+            }, 
+            "label": null, 
+            "players": {
+                "_url": "https://api.fanduel.com/fixture-lists/13543/players"
+            }, 
+            "_url": "https://api.fanduel.com/fixture-lists/13543", 
+            "id": "13543", 
+            "salary_cap": 55000, 
+            "sport": "NHL", 
+            "start_date": "2015-11-13T00:00:00Z"
+        }, 
+        {
+            "status": {
+                "started": false, 
+                "final": false
+            }, 
+            "label": null, 
+            "players": {
+                "_url": "https://api.fanduel.com/fixture-lists/13543/players"
+            }, 
+            "_url": "https://api.fanduel.com/fixture-lists/13543", 
+            "id": "13543", 
+            "salary_cap": 55000, 
+            "sport": "NHL", 
+            "start_date": "2015-11-13T00:00:00Z"
+        }, 
+        {
+            "status": {
+                "started": false, 
+                "final": false
+            }, 
+            "label": null, 
+            "players": {
+                "_url": "https://api.fanduel.com/fixture-lists/13543/players"
+            }, 
+            "_url": "https://api.fanduel.com/fixture-lists/13543", 
+            "id": "13543", 
+            "salary_cap": 55000, 
+            "sport": "NHL", 
+            "start_date": "2015-11-13T00:00:00Z"
+        }, 
+        {
+            "status": {
+                "started": false, 
+                "final": false
+            }, 
+            "label": null, 
+            "players": {
+                "_url": "https://api.fanduel.com/fixture-lists/13543/players"
+            }, 
+            "_url": "https://api.fanduel.com/fixture-lists/13543", 
+            "id": "13543", 
+            "salary_cap": 55000, 
+            "sport": "NHL", 
+            "start_date": "2015-11-13T00:00:00Z"
+        }, 
+        {
+            "status": {
+                "started": false, 
+                "final": false
+            }, 
+            "label": null, 
+            "players": {
+                "_url": "https://api.fanduel.com/fixture-lists/13543/players"
+            }, 
+            "_url": "https://api.fanduel.com/fixture-lists/13543", 
+            "id": "13543", 
+            "salary_cap": 55000, 
+            "sport": "NHL", 
+            "start_date": "2015-11-13T00:00:00Z"
+        }, 
+        {
+            "status": {
+                "started": false, 
+                "final": false
+            }, 
+            "label": null, 
+            "players": {
+                "_url": "https://api.fanduel.com/fixture-lists/13543/players"
+            }, 
+            "_url": "https://api.fanduel.com/fixture-lists/13543", 
+            "id": "13543", 
+            "salary_cap": 55000, 
+            "sport": "NHL", 
+            "start_date": "2015-11-13T00:00:00Z"
+        }, 
+        {
+            "status": {
+                "started": false, 
+                "final": false
+            }, 
+            "label": null, 
+            "players": {
+                "_url": "https://api.fanduel.com/fixture-lists/13543/players"
+            }, 
+            "_url": "https://api.fanduel.com/fixture-lists/13543", 
+            "id": "13543", 
+            "salary_cap": 55000, 
+            "sport": "NHL", 
+            "start_date": "2015-11-13T00:00:00Z"
+        }, 
+        {
+            "status": {
+                "started": false, 
+                "final": false
+            }, 
+            "label": null, 
+            "players": {
+                "_url": "https://api.fanduel.com/fixture-lists/13543/players"
+            }, 
+            "_url": "https://api.fanduel.com/fixture-lists/13543", 
+            "id": "13543", 
+            "salary_cap": 55000, 
+            "sport": "NHL", 
+            "start_date": "2015-11-13T00:00:00Z"
+        }, 
+        {
+            "status": {
+                "started": false, 
+                "final": false
+            }, 
+            "label": null, 
+            "players": {
+                "_url": "https://api.fanduel.com/fixture-lists/13543/players"
+            }, 
+            "_url": "https://api.fanduel.com/fixture-lists/13543", 
+            "id": "13543", 
+            "salary_cap": 55000, 
+            "sport": "NHL", 
+            "start_date": "2015-11-13T00:00:00Z"
+        }, 
+        {
+            "status": {
+                "started": false, 
+                "final": false
+            }, 
+            "label": null, 
+            "players": {
+                "_url": "https://api.fanduel.com/fixture-lists/13543/players"
+            }, 
+            "_url": "https://api.fanduel.com/fixture-lists/13543", 
+            "id": "13543", 
+            "salary_cap": 55000, 
+            "sport": "NHL", 
+            "start_date": "2015-11-13T00:00:00Z"
+        }, 
+        {
+            "status": {
+                "started": false, 
+                "final": false
+            }, 
+            "label": null, 
+            "players": {
+                "_url": "https://api.fanduel.com/fixture-lists/13543/players"
+            }, 
+            "_url": "https://api.fanduel.com/fixture-lists/13543", 
+            "id": "13543", 
+            "salary_cap": 55000, 
+            "sport": "NHL", 
+            "start_date": "2015-11-13T00:00:00Z"
+        }, 
+        {
+            "status": {
+                "started": false, 
+                "final": false
+            }, 
+            "label": null, 
+            "players": {
+                "_url": "https://api.fanduel.com/fixture-lists/13543/players"
+            }, 
+            "_url": "https://api.fanduel.com/fixture-lists/13543", 
+            "id": "13543", 
+            "salary_cap": 55000, 
+            "sport": "NHL", 
+            "start_date": "2015-11-13T00:00:00Z"
+        }, 
+        {
+            "status": {
+                "started": false, 
+                "final": false
+            }, 
+            "label": null, 
+            "players": {
+                "_url": "https://api.fanduel.com/fixture-lists/13543/players"
+            }, 
+            "_url": "https://api.fanduel.com/fixture-lists/13543", 
+            "id": "13543", 
+            "salary_cap": 55000, 
+            "sport": "NHL", 
+            "start_date": "2015-11-13T00:00:00Z"
+        }, 
+        {
+            "status": {
+                "started": false, 
+                "final": false
+            }, 
+            "label": null, 
+            "players": {
+                "_url": "https://api.fanduel.com/fixture-lists/13543/players"
+            }, 
+            "_url": "https://api.fanduel.com/fixture-lists/13543", 
+            "id": "13543", 
+            "salary_cap": 55000, 
+            "sport": "NHL", 
+            "start_date": "2015-11-13T00:00:00Z"
+        }, 
+        {
+            "status": {
+                "started": false, 
+                "final": false
+            }, 
+            "label": null, 
+            "players": {
+                "_url": "https://api.fanduel.com/fixture-lists/13543/players"
+            }, 
+            "_url": "https://api.fanduel.com/fixture-lists/13543", 
+            "id": "13543", 
+            "salary_cap": 55000, 
+            "sport": "NHL", 
+            "start_date": "2015-11-13T00:00:00Z"
+        }, 
+        {
+            "status": {
+                "started": false, 
+                "final": false
+            }, 
+            "label": null, 
+            "players": {
+                "_url": "https://api.fanduel.com/fixture-lists/13543/players"
+            }, 
+            "_url": "https://api.fanduel.com/fixture-lists/13543", 
+            "id": "13543", 
+            "salary_cap": 55000, 
+            "sport": "NHL", 
+            "start_date": "2015-11-13T00:00:00Z"
+        }
+    ], 
+    "contests": [
+        {
+            "max_entries_per_user": 1, 
+            "features": null, 
+            "private": false, 
+            "user_created": false, 
+            "sport": "NHL", 
+            "entry_fee": 1, 
+            "id": "13543-18587587", 
+            "entry_fee_fdp": 2400, 
+            "guaranteed": false, 
+            "fixture_list": {
+                "_members": [
+                    "13543"
+                ], 
+                "_ref": "fixture_lists.id"
+            }, 
+            "size": {
+                "max": 100, 
+                "min": 100
+            }, 
+            "start_date": "2015-11-13T00:00:00Z", 
+            "notice": null, 
+            "started": false, 
+            "made_free": false, 
+            "prizes": {
+                "count": 50, 
+                "total": 90.0, 
+                "summary": "$90"
+            }, 
+            "entries": {
+                "count": 100, 
+                "_url": "https://api.fanduel.com/contests/13543-18587587/entries"
+            }, 
+            "salary_cap": 55000, 
+            "name": "50/50 League ($1 - Top 50% Win)", 
+            "final": false, 
+            "h2h": null, 
+            "_url": "https://api.fanduel.com/contests/13543-18587587", 
+            "cancellation": null
+        }, 
+        {
+            "max_entries_per_user": 1, 
+            "features": null, 
+            "private": false, 
+            "user_created": false, 
+            "sport": "NHL", 
+            "entry_fee": 1, 
+            "id": "13543-18587092", 
+            "entry_fee_fdp": 2400, 
+            "guaranteed": false, 
+            "fixture_list": {
+                "_members": [
+                    "13543"
+                ], 
+                "_ref": "fixture_lists.id"
+            }, 
+            "size": {
+                "max": 50, 
+                "min": 50
+            }, 
+            "start_date": "2015-11-13T00:00:00Z", 
+            "notice": null, 
+            "started": false, 
+            "made_free": false, 
+            "prizes": {
+                "count": 25, 
+                "total": 45.0, 
+                "summary": "$45"
+            }, 
+            "entries": {
+                "count": 50, 
+                "_url": "https://api.fanduel.com/contests/13543-18587092/entries"
+            }, 
+            "salary_cap": 55000, 
+            "name": "50/50 League ($1 - Top 50% Win)", 
+            "final": false, 
+            "h2h": null, 
+            "_url": "https://api.fanduel.com/contests/13543-18587092", 
+            "cancellation": null
+        }, 
+        {
+            "max_entries_per_user": 1, 
+            "features": null, 
+            "private": false, 
+            "user_created": false, 
+            "sport": "NHL", 
+            "entry_fee": 1, 
+            "id": "13543-18583973", 
+            "entry_fee_fdp": 2400, 
+            "guaranteed": false, 
+            "fixture_list": {
+                "_members": [
+                    "13543"
+                ], 
+                "_ref": "fixture_lists.id"
+            }, 
+            "size": {
+                "max": 100, 
+                "min": 100
+            }, 
+            "start_date": "2015-11-13T00:00:00Z", 
+            "notice": null, 
+            "started": false, 
+            "made_free": false, 
+            "prizes": {
+                "count": 50, 
+                "total": 90.0, 
+                "summary": "$90"
+            }, 
+            "entries": {
+                "count": 100, 
+                "_url": "https://api.fanduel.com/contests/13543-18583973/entries"
+            }, 
+            "salary_cap": 55000, 
+            "name": "50/50 League ($1 - Top 50% Win)", 
+            "final": false, 
+            "h2h": null, 
+            "_url": "https://api.fanduel.com/contests/13543-18583973", 
+            "cancellation": null
+        }, 
+        {
+            "max_entries_per_user": 1, 
+            "features": null, 
+            "private": false, 
+            "user_created": false, 
+            "sport": "NHL", 
+            "entry_fee": 1, 
+            "id": "13543-18582945", 
+            "entry_fee_fdp": 2400, 
+            "guaranteed": false, 
+            "fixture_list": {
+                "_members": [
+                    "13543"
+                ], 
+                "_ref": "fixture_lists.id"
+            }, 
+            "size": {
+                "max": 50, 
+                "min": 50
+            }, 
+            "start_date": "2015-11-13T00:00:00Z", 
+            "notice": null, 
+            "started": false, 
+            "made_free": false, 
+            "prizes": {
+                "count": 25, 
+                "total": 45.0, 
+                "summary": "$45"
+            }, 
+            "entries": {
+                "count": 50, 
+                "_url": "https://api.fanduel.com/contests/13543-18582945/entries"
+            }, 
+            "salary_cap": 55000, 
+            "name": "50/50 League ($1 - Top 50% Win)", 
+            "final": false, 
+            "h2h": null, 
+            "_url": "https://api.fanduel.com/contests/13543-18582945", 
+            "cancellation": null
+        }, 
+        {
+            "max_entries_per_user": 1, 
+            "features": null, 
+            "private": false, 
+            "user_created": false, 
+            "sport": "NHL", 
+            "entry_fee": 1, 
+            "id": "13543-18582674", 
+            "entry_fee_fdp": 2400, 
+            "guaranteed": false, 
+            "fixture_list": {
+                "_members": [
+                    "13543"
+                ], 
+                "_ref": "fixture_lists.id"
+            }, 
+            "size": {
+                "max": 100, 
+                "min": 100
+            }, 
+            "start_date": "2015-11-13T00:00:00Z", 
+            "notice": null, 
+            "started": false, 
+            "made_free": false, 
+            "prizes": {
+                "count": 50, 
+                "total": 90.0, 
+                "summary": "$90"
+            }, 
+            "entries": {
+                "count": 100, 
+                "_url": "https://api.fanduel.com/contests/13543-18582674/entries"
+            }, 
+            "salary_cap": 55000, 
+            "name": "50/50 League ($1 - Top 50% Win)", 
+            "final": false, 
+            "h2h": null, 
+            "_url": "https://api.fanduel.com/contests/13543-18582674", 
+            "cancellation": null
+        }, 
+        {
+            "max_entries_per_user": 1, 
+            "features": null, 
+            "private": false, 
+            "user_created": false, 
+            "sport": "NHL", 
+            "entry_fee": 1, 
+            "id": "13543-18582074", 
+            "entry_fee_fdp": 2400, 
+            "guaranteed": false, 
+            "fixture_list": {
+                "_members": [
+                    "13543"
+                ], 
+                "_ref": "fixture_lists.id"
+            }, 
+            "size": {
+                "max": 50, 
+                "min": 50
+            }, 
+            "start_date": "2015-11-13T00:00:00Z", 
+            "notice": null, 
+            "started": false, 
+            "made_free": false, 
+            "prizes": {
+                "count": 25, 
+                "total": 45.0, 
+                "summary": "$45"
+            }, 
+            "entries": {
+                "count": 50, 
+                "_url": "https://api.fanduel.com/contests/13543-18582074/entries"
+            }, 
+            "salary_cap": 55000, 
+            "name": "50/50 League ($1 - Top 50% Win)", 
+            "final": false, 
+            "h2h": null, 
+            "_url": "https://api.fanduel.com/contests/13543-18582074", 
+            "cancellation": null
+        }, 
+        {
+            "max_entries_per_user": 1, 
+            "features": null, 
+            "private": false, 
+            "user_created": false, 
+            "sport": "NHL", 
+            "entry_fee": 1, 
+            "id": "13543-18580826", 
+            "entry_fee_fdp": 2400, 
+            "guaranteed": false, 
+            "fixture_list": {
+                "_members": [
+                    "13543"
+                ], 
+                "_ref": "fixture_lists.id"
+            }, 
+            "size": {
+                "max": 50, 
+                "min": 50
+            }, 
+            "start_date": "2015-11-13T00:00:00Z", 
+            "notice": null, 
+            "started": false, 
+            "made_free": false, 
+            "prizes": {
+                "count": 25, 
+                "total": 45.0, 
+                "summary": "$45"
+            }, 
+            "entries": {
+                "count": 50, 
+                "_url": "https://api.fanduel.com/contests/13543-18580826/entries"
+            }, 
+            "salary_cap": 55000, 
+            "name": "50/50 League ($1 - Top 50% Win)", 
+            "final": false, 
+            "h2h": null, 
+            "_url": "https://api.fanduel.com/contests/13543-18580826", 
+            "cancellation": null
+        }, 
+        {
+            "max_entries_per_user": 1, 
+            "features": null, 
+            "private": false, 
+            "user_created": false, 
+            "sport": "NHL", 
+            "entry_fee": 1, 
+            "id": "13543-18580594", 
+            "entry_fee_fdp": 2400, 
+            "guaranteed": false, 
+            "fixture_list": {
+                "_members": [
+                    "13543"
+                ], 
+                "_ref": "fixture_lists.id"
+            }, 
+            "size": {
+                "max": 100, 
+                "min": 100
+            }, 
+            "start_date": "2015-11-13T00:00:00Z", 
+            "notice": null, 
+            "started": false, 
+            "made_free": false, 
+            "prizes": {
+                "count": 50, 
+                "total": 90.0, 
+                "summary": "$90"
+            }, 
+            "entries": {
+                "count": 100, 
+                "_url": "https://api.fanduel.com/contests/13543-18580594/entries"
+            }, 
+            "salary_cap": 55000, 
+            "name": "50/50 League ($1 - Top 50% Win)", 
+            "final": false, 
+            "h2h": null, 
+            "_url": "https://api.fanduel.com/contests/13543-18580594", 
+            "cancellation": null
+        }, 
+        {
+            "max_entries_per_user": 1, 
+            "features": null, 
+            "private": false, 
+            "user_created": false, 
+            "sport": "NHL", 
+            "entry_fee": 1, 
+            "id": "13543-18579387", 
+            "entry_fee_fdp": 2400, 
+            "guaranteed": false, 
+            "fixture_list": {
+                "_members": [
+                    "13543"
+                ], 
+                "_ref": "fixture_lists.id"
+            }, 
+            "size": {
+                "max": 100, 
+                "min": 100
+            }, 
+            "start_date": "2015-11-13T00:00:00Z", 
+            "notice": null, 
+            "started": false, 
+            "made_free": false, 
+            "prizes": {
+                "count": 50, 
+                "total": 90.0, 
+                "summary": "$90"
+            }, 
+            "entries": {
+                "count": 100, 
+                "_url": "https://api.fanduel.com/contests/13543-18579387/entries"
+            }, 
+            "salary_cap": 55000, 
+            "name": "50/50 League ($1 - Top 50% Win)", 
+            "final": false, 
+            "h2h": null, 
+            "_url": "https://api.fanduel.com/contests/13543-18579387", 
+            "cancellation": null
+        }, 
+        {
+            "max_entries_per_user": 1, 
+            "features": null, 
+            "private": false, 
+            "user_created": false, 
+            "sport": "NHL", 
+            "entry_fee": 1, 
+            "id": "13543-18578932", 
+            "entry_fee_fdp": 2400, 
+            "guaranteed": false, 
+            "fixture_list": {
+                "_members": [
+                    "13543"
+                ], 
+                "_ref": "fixture_lists.id"
+            }, 
+            "size": {
+                "max": 50, 
+                "min": 50
+            }, 
+            "start_date": "2015-11-13T00:00:00Z", 
+            "notice": null, 
+            "started": false, 
+            "made_free": false, 
+            "prizes": {
+                "count": 25, 
+                "total": 45.0, 
+                "summary": "$45"
+            }, 
+            "entries": {
+                "count": 50, 
+                "_url": "https://api.fanduel.com/contests/13543-18578932/entries"
+            }, 
+            "salary_cap": 55000, 
+            "name": "50/50 League ($1 - Top 50% Win)", 
+            "final": false, 
+            "h2h": null, 
+            "_url": "https://api.fanduel.com/contests/13543-18578932", 
+            "cancellation": null
+        }, 
+        {
+            "max_entries_per_user": 1, 
+            "features": null, 
+            "private": false, 
+            "user_created": false, 
+            "sport": "NHL", 
+            "entry_fee": 2, 
+            "id": "13543-18578324", 
+            "entry_fee_fdp": 4800, 
+            "guaranteed": false, 
+            "fixture_list": {
+                "_members": [
+                    "13543"
+                ], 
+                "_ref": "fixture_lists.id"
+            }, 
+            "size": {
+                "max": 100, 
+                "min": 100
+            }, 
+            "start_date": "2015-11-13T00:00:00Z", 
+            "notice": null, 
+            "started": false, 
+            "made_free": false, 
+            "prizes": {
+                "count": 50, 
+                "total": 180.0, 
+                "summary": "$180"
+            }, 
+            "entries": {
+                "count": 100, 
+                "_url": "https://api.fanduel.com/contests/13543-18578324/entries"
+            }, 
+            "salary_cap": 55000, 
+            "name": "50/50 League ($2 - Top 50% Win)", 
+            "final": false, 
+            "h2h": null, 
+            "_url": "https://api.fanduel.com/contests/13543-18578324", 
+            "cancellation": null
+        }, 
+        {
+            "max_entries_per_user": 1, 
+            "features": null, 
+            "private": false, 
+            "user_created": false, 
+            "sport": "NHL", 
+            "entry_fee": 1, 
+            "id": "13543-18578111", 
+            "entry_fee_fdp": 2400, 
+            "guaranteed": false, 
+            "fixture_list": {
+                "_members": [
+                    "13543"
+                ], 
+                "_ref": "fixture_lists.id"
+            }, 
+            "size": {
+                "max": 50, 
+                "min": 50
+            }, 
+            "start_date": "2015-11-13T00:00:00Z", 
+            "notice": null, 
+            "started": false, 
+            "made_free": false, 
+            "prizes": {
+                "count": 25, 
+                "total": 45.0, 
+                "summary": "$45"
+            }, 
+            "entries": {
+                "count": 50, 
+                "_url": "https://api.fanduel.com/contests/13543-18578111/entries"
+            }, 
+            "salary_cap": 55000, 
+            "name": "50/50 League ($1 - Top 50% Win)", 
+            "final": false, 
+            "h2h": null, 
+            "_url": "https://api.fanduel.com/contests/13543-18578111", 
+            "cancellation": null
+        }, 
+        {
+            "max_entries_per_user": 1, 
+            "features": null, 
+            "private": false, 
+            "user_created": false, 
+            "sport": "NHL", 
+            "entry_fee": 2, 
+            "id": "13543-18576974", 
+            "entry_fee_fdp": 4800, 
+            "guaranteed": false, 
+            "fixture_list": {
+                "_members": [
+                    "13543"
+                ], 
+                "_ref": "fixture_lists.id"
+            }, 
+            "size": {
+                "max": 100, 
+                "min": 100
+            }, 
+            "start_date": "2015-11-13T00:00:00Z", 
+            "notice": null, 
+            "started": false, 
+            "made_free": false, 
+            "prizes": {
+                "count": 50, 
+                "total": 180.0, 
+                "summary": "$180"
+            }, 
+            "entries": {
+                "count": 100, 
+                "_url": "https://api.fanduel.com/contests/13543-18576974/entries"
+            }, 
+            "salary_cap": 55000, 
+            "name": "50/50 League ($2 - Top 50% Win)", 
+            "final": false, 
+            "h2h": null, 
+            "_url": "https://api.fanduel.com/contests/13543-18576974", 
+            "cancellation": null
+        }, 
+        {
+            "max_entries_per_user": 1, 
+            "features": null, 
+            "private": false, 
+            "user_created": false, 
+            "sport": "NHL", 
+            "entry_fee": 1, 
+            "id": "13543-18576361", 
+            "entry_fee_fdp": 2400, 
+            "guaranteed": false, 
+            "fixture_list": {
+                "_members": [
+                    "13543"
+                ], 
+                "_ref": "fixture_lists.id"
+            }, 
+            "size": {
+                "max": 50, 
+                "min": 50
+            }, 
+            "start_date": "2015-11-13T00:00:00Z", 
+            "notice": null, 
+            "started": false, 
+            "made_free": false, 
+            "prizes": {
+                "count": 25, 
+                "total": 45.0, 
+                "summary": "$45"
+            }, 
+            "entries": {
+                "count": 50, 
+                "_url": "https://api.fanduel.com/contests/13543-18576361/entries"
+            }, 
+            "salary_cap": 55000, 
+            "name": "50/50 League ($1 - Top 50% Win)", 
+            "final": false, 
+            "h2h": null, 
+            "_url": "https://api.fanduel.com/contests/13543-18576361", 
+            "cancellation": null
+        }, 
+        {
+            "max_entries_per_user": 250, 
+            "features": null, 
+            "private": false, 
+            "user_created": false, 
+            "sport": "NHL", 
+            "entry_fee": 2, 
+            "id": "13543-18527132", 
+            "entry_fee_fdp": 4800, 
+            "guaranteed": true, 
+            "fixture_list": {
+                "_members": [
+                    "13543"
+                ], 
+                "_ref": "fixture_lists.id"
+            }, 
+            "size": {
+                "max": 14367, 
+                "min": 2
+            }, 
+            "start_date": "2015-11-13T00:00:00Z", 
+            "notice": null, 
+            "started": false, 
+            "made_free": false, 
+            "prizes": {
+                "count": 2775, 
+                "total": 25000.0, 
+                "summary": "$25,000"
+            }, 
+            "entries": {
+                "count": 8995, 
+                "_url": "https://api.fanduel.com/contests/13543-18527132/entries"
+            }, 
+            "salary_cap": 55000, 
+            "name": "$25K Thu NHL Breakaway ($25K Guaranteed)", 
+            "final": false, 
+            "h2h": null, 
+            "_url": "https://api.fanduel.com/contests/13543-18527132", 
+            "cancellation": null
+        }, 
+        {
+            "max_entries_per_user": 1, 
+            "features": null, 
+            "private": false, 
+            "user_created": false, 
+            "sport": "NHL", 
+            "entry_fee": 1, 
+            "id": "13543-18527123", 
+            "entry_fee_fdp": 2400, 
+            "guaranteed": true, 
+            "fixture_list": {
+                "_members": [
+                    "13543"
+                ], 
+                "_ref": "fixture_lists.id"
+            }, 
+            "size": {
+                "max": 9195, 
+                "min": 2
+            }, 
+            "start_date": "2015-11-13T00:00:00Z", 
+            "notice": null, 
+            "started": false, 
+            "made_free": false, 
+            "prizes": {
+                "count": 1562, 
+                "total": 8000.0, 
+                "summary": "$8,000"
+            }, 
+            "entries": {
+                "count": 4374, 
+                "_url": "https://api.fanduel.com/contests/13543-18527123/entries"
+            }, 
+            "salary_cap": 55000, 
+            "name": "$8K Thu NHL One Timer (Single Entry) ", 
+            "final": false, 
+            "h2h": null, 
+            "_url": "https://api.fanduel.com/contests/13543-18527123", 
+            "cancellation": null
+        }
+    ], 
+    "users": []
+}
