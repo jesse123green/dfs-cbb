@@ -116,11 +116,11 @@ def report(grid_scores, n_top=3):
 ###########################################
 
 
-############ PLAYERS ############ MAE: 
-P = pickle.load(open('../../data/train/P_fd_000.p','rb'))
-n_estimators = 4000
+############ PLAYERS ############ MAE: 5.593 (420)
+P = pickle.load(open('../../data/train/P_fd_001.p','rb'))
+n_estimators = 1500
 params = {'n_estimators': n_estimators, 'max_depth': 4, 'min_samples_split': 5,'subsample':.5,
-'learning_rate': 0.025, 'loss': 'lad', 'random_state':91}
+'learning_rate': 0.01, 'loss': 'lad', 'random_state':91}
 #######################################
 
 

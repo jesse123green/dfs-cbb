@@ -5,18 +5,19 @@
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
 
-import MySQLdb
+import pymysql
 
 class AllgamesPipeline(object):
 
-    db = MySQLdb.connect("localhost","root","purplepants123","cbb",charset="utf8")
+    db = pymysql.connect("localhost","cbb","","cbb",charset="utf8")
 
     def process_item(self, item, spider):
       c = self.db.cursor()
       print item
       print '* '*50
-      c.execute("""INSERT IGNORE INTO games (home,away,time) VALUES (%s, %s, %s)""",
-                (item['home'],item['away'],item['gameday'])
+      c.execute("""INSERT IGNORE INTO games (gameid) VALUES (%s)""",
+                (item['gid'])
                  )
+      c.execute("""UPDATE games set season=2015 WHERE gametime > '2015-07-01' and gametime < '2016-07-01'""")
       self.db.commit()
       return item

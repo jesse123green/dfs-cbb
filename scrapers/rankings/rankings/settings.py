@@ -17,5 +17,6 @@ ITEM_PIPELINES = [
     'rankings.pipelines.RankingsPipeline',
 ]
 
+DOWNLOAD_HANDLERS = {'s3': None,}
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'rankings (+http://www.yourdomain.com)'

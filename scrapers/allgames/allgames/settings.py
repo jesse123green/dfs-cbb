@@ -17,5 +17,6 @@ ITEM_PIPELINES = [
     'allgames.pipelines.AllgamesPipeline',
 ]
 
+DOWNLOAD_HANDLERS = {'s3': None,}
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'allgames (+http://www.yourdomain.com)'

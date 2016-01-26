@@ -17,5 +17,7 @@ NEWSPIDER_MODULE = 'cbb_data.spiders'
 ITEM_PIPELINES = [
     'cbb_data.pipelines.CbbDataPipeline',
 ]
+
+DOWNLOAD_HANDLERS = {'s3': None,}
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'cbb_data (+http://www.yourdomain.com)'

@@ -9,13 +9,16 @@ import scrapy
 
 
 class FanduelItem(scrapy.Item):
-    # define the fields for your item here like:
-    name = scrapy.Field()
-    fppg = scrapy.Field()
-    team = scrapy.Field()
-    salary = scrapy.Field()
-    opp = scrapy.Field()
-    home = scrapy.Field()
-    position = scrapy.Field()
-    isEligible = scrapy.Field()
-    pass
+	# define the fields for your item here like:
+	name = scrapy.Field()
+	fppg = scrapy.Field()
+	team = scrapy.Field()
+	salary = scrapy.Field()
+	opp = scrapy.Field()
+	home = scrapy.Field()
+	position = scrapy.Field()
+	indicator = scrapy.Field()
+	fid = scrapy.Field()
+	gameid = scrapy.Field()
+	contestday = scrapy.Field()
+	pass

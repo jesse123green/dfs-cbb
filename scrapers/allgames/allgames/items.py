@@ -10,7 +10,5 @@ import scrapy
 
 class AllgamesItem(scrapy.Item):
     # define the fields for your item here like:
-    gameday = scrapy.Field()
-    home = scrapy.Field()
-    away = scrapy.Field()
+    gid = scrapy.Field()
     pass

@@ -1,7 +1,7 @@
 import scrapy,re,sys
 from cbb_data.items import CbbDataItem
 from datetime import datetime,date,timedelta
-import MySQLdb
+import pymysql
 
 def daterange(start_date, end_date):
     for n in range(int ((end_date - start_date).days)):
@@ -11,11 +11,13 @@ class cbbdataSpider(scrapy.Spider):
     name = "cbbdata"
     allowed_domains = ["espn.go.com"]
 
-    db = MySQLdb.connect("localhost","root","purplepants123","cbb",charset="utf8")
+    db = pymysql.connect("localhost","cbb","","cbb",charset="utf8")
     c = db.cursor()
-    c.execute("""SELECT gid from games WHERE home = -1""")
+    c.execute("""SELECT gameid from games WHERE home is null""")
 
-    start_urls = ["http://espn.go.com/ncb/boxscore?id=" + game[0] for game in c.fetchall()]
+    start_urls = ["http://espn.go.com/ncb/boxscore?id=" + str(game[0]) for game in c.fetchall()]
+
+    print start_urls
 
     def parse(self, response):
       print '* '*50

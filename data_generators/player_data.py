@@ -43,19 +43,19 @@ class CBB():
 		for aday in self.daterange(date(2015,1,8),days['stop']+timedelta(1)):
 			print aday
 
-			c.execute("SELECT today.opponent opponent,today.season season,today.team team,today.pid pid,today.gid today_gid,today.pos today_pos,(today.pts+today.reb*1.2+today.ast*1.5+today.blk*2+today.stl*2-today.tov) today_fp,\
+			c.execute("SELECT today.opponent opponent,today.season season,today.team team,today.pid pid,today.gameid today_gameid,today.pos today_pos,(today.pts+today.reb*1.2+today.ast*1.5+today.blk*2+today.stl*2-today.tov) today_fp,\
 			(hist.avg_pts+hist.avg_reb*1.2+hist.avg_ast*1.5+hist.avg_blk*2+hist.avg_stl*2-hist.avg_tov) fph,hist.avg_min as hist_min,hist.avg_fgm as hist_fgm,hist.avg_fga as hist_fga,hist.avg_tpm as hist_tpm,hist.avg_tpa as hist_tpa,hist.avg_ftm as hist_ftm,hist.avg_fta as hist_fta,hist.avg_oreb as hist_oreb,hist.avg_dreb as hist_dreb,hist.avg_reb as hist_reb,hist.avg_ast as hist_ast,hist.avg_stl as hist_stl,hist.avg_blk as hist_blk,hist.avg_tov as hist_tov,hist.avg_pf as hist_pf,hist.avg_pts as hist_pts,hist.cpid as hist_game_count,cpid \
 			FROM \
-			(SELECT pid,count(pid) cpid,avg(min) avg_min, avg(fgm) avg_fgm,avg(fga) avg_fga,avg(tpm) avg_tpm,avg(tpa) avg_tpa,avg(ftm) avg_ftm,avg(fta) avg_fta,avg(oreb) avg_oreb,avg(dreb) avg_dreb,avg(reb) avg_reb,avg(ast) avg_ast,avg(stl) avg_stl,avg(blk) avg_blk,avg(tov) avg_tov,avg(pf) avg_pf,avg(pts) avg_pts from gamelog,games WHERE games.gid=gamelog.gid AND date(games.gametime) < %s AND games.season=(SELECT season FROM games WHERE date(gametime)=%s LIMIT 1) group by pid having count(pid) > %s) AS hist,\
-			(SELECT IF(team=games.home,games.away,games.home) opponent,season,team,games.gid,pid,pts,reb,ast,blk,stl,tov,pos FROM gamelog,games WHERE games.gid=gamelog.gid AND date(games.gametime) = %s AND pos!='NA' AND min IS NOT NULL) AS today \
-			WHERE hist.pid = today.pid order by today.gid,today.pid;",
+			(SELECT pid,count(pid) cpid,avg(min) avg_min, avg(fgm) avg_fgm,avg(fga) avg_fga,avg(tpm) avg_tpm,avg(tpa) avg_tpa,avg(ftm) avg_ftm,avg(fta) avg_fta,avg(oreb) avg_oreb,avg(dreb) avg_dreb,avg(reb) avg_reb,avg(ast) avg_ast,avg(stl) avg_stl,avg(blk) avg_blk,avg(tov) avg_tov,avg(pf) avg_pf,avg(pts) avg_pts from gamelog,games WHERE games.gameid=gamelog.gameid AND date(games.gametime) < %s AND games.season=(SELECT season FROM games WHERE date(gametime)=%s LIMIT 1) group by pid having count(pid) > %s) AS hist,\
+			(SELECT IF(team=games.home,games.away,games.home) opponent,season,team,games.gameid,pid,pts,reb,ast,blk,stl,tov,pos FROM gamelog,games WHERE games.gameid=gamelog.gameid AND date(games.gametime) = %s AND pos!='NA' AND min IS NOT NULL) AS today \
+			WHERE hist.pid = today.pid order by today.gameid,today.pid;",
 			(aday,aday,min_games,aday))
 
 			for d in c.fetchall():
 				if ranked_teams.has_key(d['team']) and ranked_teams.has_key(d['opponent']):
 					fh = {}
 					fh['pid'] = d['pid']
-					fh['gid'] = d['today_gid']
+					fh['gameid'] = d['today_gameid']
 					fh['pos'] = d['today_pos']
 					fh['team'] = d['team']
 					fh['season'] = d['season']
@@ -80,11 +80,11 @@ class CBB():
 		for row in self.feature_headers:
 
 			if row['pos'] == 'C':
-				positions.append([1.,0.,0.])
+				positions.append([1.,0.])
 			elif row['pos'] == 'F':
-				positions.append([0.,1.,0.])
+				positions.append([1.,0.])
 			elif row['pos'] == 'G':
-				positions.append([0.,0.,1.])
+				positions.append([0.,1.])
 
 		self.X = self.combine_features(self.X,positions)
 		return
@@ -126,7 +126,7 @@ class CBB():
 		homeaway = []
 
 		for row in self.feature_headers:
-			c.execute("SELECT IF(gamelog.team = gamelog.home,1,0) ha,gamelog.team,home,away FROM gamelog WHERE gamelog.gid = %s and gamelog.pid = %s",(row['gid'],row['pid']))
+			c.execute("SELECT IF(gamelog.team = gamelog.home,1,0) ha,gamelog.team,home,away FROM gamelog WHERE gamelog.gameid = %s and gamelog.pid = %s",(row['gameid'],row['pid']))
 			result = c.fetchone()
 			homeaway.append(float(result['ha']))
 			# print result['ha'],result['team'],result['home'],result['away']
@@ -140,7 +140,7 @@ class CBB():
 		n_fea = len(avg_stats)
 
 		for row in self.feature_headers:
-			c.execute("""SELECT count(*) as game_count,(avg(pts)+avg(reb)*1.2+avg(ast)*1.5+avg(blk)*2+avg(stl)*2-avg(tov)) fph, avg(min) min, avg(fgm) fgm,avg(fga) fga,avg(tpm) tpm,avg(tpa) tpa,avg(ftm) ftm,avg(fta) fta,avg(oreb) oreb,avg(dreb) dreb,avg(reb) reb,avg(ast) ast,avg(stl) stl,avg(blk) blk,avg(tov) tov,avg(pf) pf,avg(pts) pts from gamelog,games WHERE games.gid=gamelog.gid AND games.season=(SELECT season-1 FROM games WHERE gametime=%s LIMIT 1) and pid=%s""",\
+			c.execute("""SELECT count(*) as game_count,(avg(pts)+avg(reb)*1.2+avg(ast)*1.5+avg(blk)*2+avg(stl)*2-avg(tov)) fph, avg(min) min, avg(fgm) fgm,avg(fga) fga,avg(tpm) tpm,avg(tpa) tpa,avg(ftm) ftm,avg(fta) fta,avg(oreb) oreb,avg(dreb) dreb,avg(reb) reb,avg(ast) ast,avg(stl) stl,avg(blk) blk,avg(tov) tov,avg(pf) pf,avg(pts) pts from gamelog,games WHERE games.gameid=gamelog.gameid AND games.season=(SELECT season-1 FROM games WHERE gametime=%s LIMIT 1) and pid=%s""",\
 				(row['gametime'],row['pid']))
 			result = c.fetchone()
 
@@ -200,7 +200,7 @@ class CBB():
 
 		for row in self.feature_headers:
 			c.execute("""SELECT SUM(fgm)/SUM(min) fgm,SUM(fga)/SUM(min) fga,SUM(tpm)/SUM(min) tpm,SUM(tpa)/SUM(min) tpa,SUM(ftm)/SUM(min) ftm,SUM(fta)/SUM(min) fta,SUM(oreb)/SUM(min) oreb,SUM(dreb)/SUM(min) dreb,SUM(reb)/SUM(min) reb,SUM(ast)/SUM(min) ast,SUM(stl)/SUM(min) stl,SUM(blk)/SUM(min) blk,SUM(tov)/SUM(min) tov,SUM(pf)/SUM(min) pf,SUM(pts)/SUM(min) pts \
-				FROM gamelog,games where gamelog.team=%s and games.gametime < %s and games.season=%s and games.gid=gamelog.gid and gamelog.min is not null""",\
+				FROM gamelog,games where gamelog.team=%s and games.gametime < %s and games.season=%s and games.gameid=gamelog.gameid and gamelog.min is not null""",\
 				(row['team'],row['gametime'],row['season']))
 			result = c.fetchone()
 			team_stats.append([float(result['fgm']),float(result['fga']),float(result['tpm']),float(result['tpa']),float(result['ftm']),float(result['fta']),float(result['oreb']),float(result['dreb']),float(result['reb']),float(result['ast']),float(result['stl']),float(result['blk']),float(result['tov']),float(result['pf']),float(result['pts'])])
@@ -216,7 +216,7 @@ class CBB():
 		for row in self.feature_headers:
 			# print row
 			c.execute("""SELECT SUM(fgm)/SUM(min) fgm,SUM(fga)/SUM(min) fga,SUM(tpm)/SUM(min) tpm,SUM(tpa)/SUM(min) tpa,SUM(ftm)/SUM(min) ftm,SUM(fta)/SUM(min) fta,SUM(oreb)/SUM(min) oreb,SUM(dreb)/SUM(min) dreb,SUM(reb)/SUM(min) reb,SUM(ast)/SUM(min) ast,SUM(stl)/SUM(min) stl,SUM(blk)/SUM(min) blk,SUM(tov)/SUM(min) tov,SUM(pf)/SUM(min) pf,SUM(pts)/SUM(min) pts \
-				FROM gamelog,games where gamelog.team=%s and games.gametime < %s and games.season=%s and games.gid=gamelog.gid and gamelog.min is not null""",\
+				FROM gamelog,games where gamelog.team=%s and games.gametime < %s and games.season=%s and games.gameid=gamelog.gameid and gamelog.min is not null""",\
 				(row['opponent'],row['gametime'],row['season']))
 			result = c.fetchone()
 			team_stats.append([float(result['fgm']),float(result['fga']),float(result['tpm']),float(result['tpa']),float(result['ftm']),float(result['fta']),float(result['oreb']),float(result['dreb']),float(result['reb']),float(result['ast']),float(result['stl']),float(result['blk']),float(result['tov']),float(result['pf']),float(result['pts'])])
@@ -261,7 +261,7 @@ class CBB():
 
 		for row in self.feature_headers:
 			c.execute("""SELECT SUM(fgm)/SUM(min) fgm,SUM(fga)/SUM(min) fga,SUM(tpm)/SUM(min) tpm,SUM(tpa)/SUM(min) tpa,SUM(ftm)/SUM(min) ftm,SUM(fta)/SUM(min) fta,SUM(oreb)/SUM(min) oreb,SUM(dreb)/SUM(min) dreb,SUM(reb)/SUM(min) reb,SUM(ast)/SUM(min) ast,SUM(stl)/SUM(min) stl,SUM(blk)/SUM(min) blk,SUM(tov)/SUM(min) tov,SUM(pf)/SUM(min) pf,SUM(pts)/SUM(min) pts \
-				FROM gamelog,games where gamelog.pos=%s and gamelog.team != %s  and (games.home = %s or games.away = %s) and games.gametime < %s and games.season=%s and games.gid=gamelog.gid and gamelog.min is not null""",\
+				FROM gamelog,games where gamelog.pos=%s and gamelog.team != %s  and (games.home = %s or games.away = %s) and games.gametime < %s and games.season=%s and games.gameid=gamelog.gameid and gamelog.min is not null""",\
 				(row['pos'],row['opponent'],row['opponent'],row['opponent'],row['gametime'],row['season']))
 			result = c.fetchone()
 			team_stats.append([float(result['fgm']),float(result['fga']),float(result['tpm']),float(result['tpa']),float(result['ftm']),float(result['fta']),float(result['oreb']),float(result['dreb']),float(result['reb']),float(result['ast']),float(result['stl']),float(result['blk']),float(result['tov']),float(result['pf']),float(result['pts'])])
@@ -276,7 +276,7 @@ class CBB():
 
 		for row in self.feature_headers:
 			c.execute("""SELECT SUM(fgm)/SUM(min) fgm,SUM(fga)/SUM(min) fga,SUM(tpm)/SUM(min) tpm,SUM(tpa)/SUM(min) tpa,SUM(ftm)/SUM(min) ftm,SUM(fta)/SUM(min) fta,SUM(oreb)/SUM(min) oreb,SUM(dreb)/SUM(min) dreb,SUM(reb)/SUM(min) reb,SUM(ast)/SUM(min) ast,SUM(stl)/SUM(min) stl,SUM(blk)/SUM(min) blk,SUM(tov)/SUM(min) tov,SUM(pf)/SUM(min) pf,SUM(pts)/SUM(min) pts \
-				FROM gamelog,games where gamelog.team != %s  and (games.home = %s or games.away = %s) and games.gametime < %s and games.season=%s and games.gid=gamelog.gid and gamelog.min is not null""",\
+				FROM gamelog,games where gamelog.team != %s  and (games.home = %s or games.away = %s) and games.gametime < %s and games.season=%s and games.gameid=gamelog.gameid and gamelog.min is not null""",\
 				(row['opponent'],row['opponent'],row['opponent'],row['gametime'],row['season']))
 			result = c.fetchone()
 			team_stats.append([float(result['fgm']),float(result['fga']),float(result['tpm']),float(result['tpa']),float(result['ftm']),float(result['fta']),float(result['oreb']),float(result['dreb']),float(result['reb']),float(result['ast']),float(result['stl']),float(result['blk']),float(result['tov']),float(result['pf']),float(result['pts'])])
@@ -435,4 +435,4 @@ if __name__ == "__main__":
 	print 'Finished after %.2f mins\n'%((time.time()-ti)/60.)
 	ti= time.time()
 
-	pickle.dump(P,open('../data/train/P_fd_000.p','wb'))
+	pickle.dump(P,open('../data/train/P_fd_001.p','wb'))

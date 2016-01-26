@@ -1,11 +1,11 @@
 #!/bin/bash
 
-GAMEID="14041"
+GAMEID="14523"
 
-echo --- getting new games ---
-cd scrapers/cbb_games
-scrapy crawl cbbgames
-cd ../..
+# echo --- getting new games ---
+# cd scrapers/allgames
+# scrapy crawl allgames
+# cd ../..
 
 # echo --- getting game data ---
 # cd scrapers/cbb_data
@@ -18,13 +18,18 @@ cd ../..
 # cd ../..
 
 # echo --- getting fanduel data ---
-# cd scrapers/fanduel
-# scrapy crawl contest -a gameid="$GAMEID"
-# cd ../..
+# cd lineups
+# python fanduel_players.py "$GAMEID"
+# cd ..
 
 # echo --- housekeeping ---
 # cd housekeeping
-# python player_sync.py
+# python player_sync.py "$GAMEID"
+# cd ..
+
+# echo --- housekeeping ---
+# cd housekeeping
+# python team_sync.py "$GAMEID"
 # cd ..
 
 # echo --- predict ---
@@ -32,7 +37,7 @@ cd ../..
 # python predict_players.py "$GAMEID" "fanduel"
 # cd ..
 
-# echo --- lineups ---
-# cd lineups
-# python lineups_optimizer.py "$GAMEID" "fanduel"
-# cd ..
+echo --- lineups ---
+cd lineups
+python lineups_optimizer.py "$GAMEID" "fanduel"
+cd ..
