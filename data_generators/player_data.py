@@ -23,7 +23,7 @@ class CBB():
 			xnew = xnew.reshape(xnew.shape[0], 1)
 		return np.concatenate((X,xnew),axis=1)
 
-	def load_data(self,min_games=10):
+	def load_data(self,min_games=10,min_avg_fp=7):
 		c = db.cursor()
 		self.X = []
 		self.y = []
@@ -46,10 +46,10 @@ class CBB():
 			c.execute("SELECT today.opponent opponent,today.season season,today.team team,today.pid pid,today.gameid today_gameid,today.pos today_pos,(today.pts+today.reb*1.2+today.ast*1.5+today.blk*2+today.stl*2-today.tov) today_fp,\
 			(hist.avg_pts+hist.avg_reb*1.2+hist.avg_ast*1.5+hist.avg_blk*2+hist.avg_stl*2-hist.avg_tov) fph,hist.avg_min as hist_min,hist.avg_fgm as hist_fgm,hist.avg_fga as hist_fga,hist.avg_tpm as hist_tpm,hist.avg_tpa as hist_tpa,hist.avg_ftm as hist_ftm,hist.avg_fta as hist_fta,hist.avg_oreb as hist_oreb,hist.avg_dreb as hist_dreb,hist.avg_reb as hist_reb,hist.avg_ast as hist_ast,hist.avg_stl as hist_stl,hist.avg_blk as hist_blk,hist.avg_tov as hist_tov,hist.avg_pf as hist_pf,hist.avg_pts as hist_pts,hist.cpid as hist_game_count,cpid \
 			FROM \
-			(SELECT pid,count(pid) cpid,avg(min) avg_min, avg(fgm) avg_fgm,avg(fga) avg_fga,avg(tpm) avg_tpm,avg(tpa) avg_tpa,avg(ftm) avg_ftm,avg(fta) avg_fta,avg(oreb) avg_oreb,avg(dreb) avg_dreb,avg(reb) avg_reb,avg(ast) avg_ast,avg(stl) avg_stl,avg(blk) avg_blk,avg(tov) avg_tov,avg(pf) avg_pf,avg(pts) avg_pts from gamelog,games WHERE games.gameid=gamelog.gameid AND date(games.gametime) < %s AND games.season=(SELECT season FROM games WHERE date(gametime)=%s LIMIT 1) group by pid having count(pid) > %s) AS hist,\
+			(SELECT pid,count(pid) cpid,avg(min) avg_min, avg(fgm) avg_fgm,avg(fga) avg_fga,avg(tpm) avg_tpm,avg(tpa) avg_tpa,avg(ftm) avg_ftm,avg(fta) avg_fta,avg(oreb) avg_oreb,avg(dreb) avg_dreb,avg(reb) avg_reb,avg(ast) avg_ast,avg(stl) avg_stl,avg(blk) avg_blk,avg(tov) avg_tov,avg(pf) avg_pf,avg(pts) avg_pts from gamelog,games WHERE games.gameid=gamelog.gameid AND date(games.gametime) < %s AND games.season=(SELECT season FROM games WHERE date(gametime)=%s LIMIT 1) group by pid having count(pid) > %s and (avg(pts)+avg(reb)*1.2+avg(ast)*1.5+avg(blk)*2+avg(stl)*2-avg(tov))>%s) AS hist,\
 			(SELECT IF(team=games.home,games.away,games.home) opponent,season,team,games.gameid,pid,pts,reb,ast,blk,stl,tov,pos FROM gamelog,games WHERE games.gameid=gamelog.gameid AND date(games.gametime) = %s AND pos!='NA' AND min IS NOT NULL) AS today \
 			WHERE hist.pid = today.pid order by today.gameid,today.pid;",
-			(aday,aday,min_games,aday))
+			(aday,aday,min_games,min_avg_fp,aday))
 
 			for d in c.fetchall():
 				if ranked_teams.has_key(d['team']) and ranked_teams.has_key(d['opponent']):
@@ -57,11 +57,14 @@ class CBB():
 					fh['pid'] = d['pid']
 					fh['gameid'] = d['today_gameid']
 					fh['pos'] = d['today_pos']
+					if fh['pos'] == 'C':
+						fh['pos'] = 'F'
 					fh['team'] = d['team']
 					fh['season'] = d['season']
 					fh['gametime'] = aday
 					fh['opponent'] = d['opponent']
 					fh['game_count'] = d['cpid']
+					fh['fph'] = float(d['fph'])
 					# print d['team'],aday
 					
 					self.feature_headers.append(fh)
@@ -136,7 +139,7 @@ class CBB():
 	def previous_year(self):
 		c = db.cursor()
 		last_year = []
-		avg_stats = [25.87565,30.67279974484283,5.0116,10.9102,0.8971,2.4915,2.3553,3.0956,1.4124,4.1437,5.5561,2.9925,0.9959,0.6374,1.8225,2.3215,13.2756,0.3581]
+		avg_stats = [16.75161286,23.95441817,3.05738002,6.89188935,0.83262512,2.36660795,1.7999249,2.56890417,1.10152368,2.7724201,3.87394385,1.62841595,0.7814614,0.42406357,1.49812266,2.12166462,8.74732903]
 		n_fea = len(avg_stats)
 
 		for row in self.feature_headers:
@@ -148,7 +151,7 @@ class CBB():
 				last_year.append(avg_stats)
 				row['n_games_last_year'] = 0
 			else:
-				last_year.append([float(result['fph']),float(result['min']),float(result['fgm']),float(result['fga']),float(result['tpm']),float(result['tpa']),float(result['ftm']),float(result['fta']),float(result['oreb']),float(result['dreb']),float(result['reb']),float(result['ast']),float(result['stl']),float(result['blk']),float(result['tov']),float(result['pf']),float(result['pts']),float(result['plus_minus'])])
+				last_year.append([float(result['fph']),float(result['min']),float(result['fgm']),float(result['fga']),float(result['tpm']),float(result['tpa']),float(result['ftm']),float(result['fta']),float(result['oreb']),float(result['dreb']),float(result['reb']),float(result['ast']),float(result['stl']),float(result['blk']),float(result['tov']),float(result['pf']),float(result['pts'])])
 				row['n_games_last_year'] = result['game_count']
 
 		self.X = self.combine_features(self.X,last_year)
@@ -260,6 +263,7 @@ class CBB():
 		team_stats = []
 
 		for row in self.feature_headers:
+			# print row
 			c.execute("""SELECT SUM(fgm)/SUM(min) fgm,SUM(fga)/SUM(min) fga,SUM(tpm)/SUM(min) tpm,SUM(tpa)/SUM(min) tpa,SUM(ftm)/SUM(min) ftm,SUM(fta)/SUM(min) fta,SUM(oreb)/SUM(min) oreb,SUM(dreb)/SUM(min) dreb,SUM(reb)/SUM(min) reb,SUM(ast)/SUM(min) ast,SUM(stl)/SUM(min) stl,SUM(blk)/SUM(min) blk,SUM(tov)/SUM(min) tov,SUM(pf)/SUM(min) pf,SUM(pts)/SUM(min) pts \
 				FROM gamelog,games where gamelog.pos=%s and gamelog.team != %s  and (games.home = %s or games.away = %s) and games.gametime < %s and games.season=%s and games.gameid=gamelog.gameid and gamelog.min is not null""",\
 				(row['pos'],row['opponent'],row['opponent'],row['opponent'],row['gametime'],row['season']))
@@ -290,11 +294,56 @@ class CBB():
 		team_stats = []
 
 		for row in self.feature_headers:
-			c.execute("""SELECT SUM(fgm)/SUM(min) fgm,SUM(fga)/SUM(min) fga,SUM(tpm)/SUM(min) tpm,SUM(tpa)/SUM(min) tpa,SUM(ftm)/SUM(min) ftm,SUM(fta)/SUM(min) fta,SUM(oreb)/SUM(min) oreb,SUM(dreb)/SUM(min) dreb,SUM(reb)/SUM(min) reb,SUM(ast)/SUM(min) ast,SUM(stl)/SUM(min) stl,SUM(blk)/SUM(min) blk,SUM(tov)/SUM(min) tov,SUM(pf)/SUM(min) pf,SUM(pts)/SUM(min) pts FROM gamelog where min is not null and gamelog.team != %s  and (home = %s or away = %s) and gametime < %s and gamelog.min is not null and gametime > (SELECT gametime from games where gametime < %s and (home = %s or away = %s) order by gametime desc LIMIT 1 OFFSET %s)""",\
+
+			c.execute("""SELECT SUM(fgm)/SUM(min) fgm,SUM(fga)/SUM(min) fga,SUM(tpm)/SUM(min) tpm,SUM(tpa)/SUM(min) tpa,SUM(ftm)/SUM(min) ftm,SUM(fta)/SUM(min) fta,SUM(oreb)/SUM(min) oreb,SUM(dreb)/SUM(min) dreb,SUM(reb)/SUM(min) reb,SUM(ast)/SUM(min) ast,SUM(stl)/SUM(min) stl,SUM(blk)/SUM(min) blk,SUM(tov)/SUM(min) tov,SUM(pf)/SUM(min) pf,SUM(pts)/SUM(min) pts FROM gamelog where gamelog.team != %s  and (home = %s or away = %s) and gametime < %s and gamelog.min is not null and gametime > (SELECT gametime from games where gametime < %s and (home = %s or away = %s) order by gametime desc LIMIT 1 OFFSET %s)""",\
 				(row['opponent'],row['opponent'],row['opponent'],row['gametime'],row['gametime'],row['opponent'],row['opponent'],n))
+			result = c.fetchone()
+			# print row
+			# print result
+			# print '-'*20
+			team_stats.append([float(result['fgm']),float(result['fga']),float(result['tpm']),float(result['tpa']),float(result['ftm']),float(result['fta']),float(result['oreb']),float(result['dreb']),float(result['reb']),float(result['ast']),float(result['stl']),float(result['blk']),float(result['tov']),float(result['pf']),float(result['pts'])])
+
+		self.X = self.combine_features(self.X,team_stats)
+		return
+
+	def add_opponent_defense_position_limit(self,n):
+
+		c = db.cursor()
+		team_stats = []
+
+		for row in self.feature_headers:
+			c.execute("""SELECT SUM(fgm)/SUM(min) fgm,SUM(fga)/SUM(min) fga,SUM(tpm)/SUM(min) tpm,SUM(tpa)/SUM(min) tpa,SUM(ftm)/SUM(min) ftm,SUM(fta)/SUM(min) fta,SUM(oreb)/SUM(min) oreb,SUM(dreb)/SUM(min) dreb,SUM(reb)/SUM(min) reb,SUM(ast)/SUM(min) ast,SUM(stl)/SUM(min) stl,SUM(blk)/SUM(min) blk,SUM(tov)/SUM(min) tov,SUM(pf)/SUM(min) pf,SUM(pts)/SUM(min) pts FROM gamelog where pos=%s and gamelog.team != %s  and (home = %s or away = %s) and gametime < %s and gamelog.min is not null and gametime > (SELECT gametime from games where gametime < %s and (home = %s or away = %s) order by gametime desc LIMIT 1 OFFSET %s)""",\
+				(row['pos'],row['opponent'],row['opponent'],row['opponent'],row['gametime'],row['gametime'],row['opponent'],row['opponent'],n))
 			result = c.fetchone()
 			team_stats.append([float(result['fgm']),float(result['fga']),float(result['tpm']),float(result['tpa']),float(result['ftm']),float(result['fta']),float(result['oreb']),float(result['dreb']),float(result['reb']),float(result['ast']),float(result['stl']),float(result['blk']),float(result['tov']),float(result['pf']),float(result['pts'])])
 
+		self.X = self.combine_features(self.X,team_stats)
+		return
+
+	def add_opponent_stength_of_schedule(self): ## opponent_opponent_offense_historical
+
+		c = db.cursor()
+		c2 = db.cursor()
+		team_stats = []
+		sos_data = {}
+
+		for row in self.feature_headers:
+			team_sos = []
+			c.execute("""SELECT gamelog.gameid,IF(gamelog.team=gamelog.home,gamelog.away,gamelog.home) opponent,gamelog.gametime gametime from gamelog,games where games.gameid=gamelog.gameid and team = %s and gamelog.gametime < %s and games.season=%s group by gameid""",(row['opponent'],row['gametime'],row['season']))
+			for game in c.fetchall():
+				if sos_data.has_key((game['opponent'],game['gametime'])):
+					team_sos.append(sos_data[(game['opponent'],game['gametime'])])
+				else:
+					c2.execute("""SELECT SUM(fgm)/SUM(min) fgm,SUM(fga)/SUM(min) fga,SUM(tpm)/SUM(min) tpm,SUM(tpa)/SUM(min) tpa,SUM(ftm)/SUM(min) ftm,SUM(fta)/SUM(min) fta,SUM(oreb)/SUM(min) oreb,SUM(dreb)/SUM(min) dreb,SUM(reb)/SUM(min) reb,SUM(ast)/SUM(min) ast,SUM(stl)/SUM(min) stl,SUM(blk)/SUM(min) blk,SUM(tov)/SUM(min) tov,SUM(pf)/SUM(min) pf,SUM(pts)/SUM(min) pts FROM gamelog,games where games.season=%s and games.gameid=gamelog.gameid and gamelog.team = %s and gamelog.gametime < %s""",\
+					(row['season'],row['opponent'],row['gametime']))
+					result = c2.fetchone()
+					team_sos.append([float(result['fgm']),float(result['fga']),float(result['tpm']),float(result['tpa']),float(result['ftm']),float(result['fta']),float(result['oreb']),float(result['dreb']),float(result['reb']),float(result['ast']),float(result['stl']),float(result['blk']),float(result['tov']),float(result['pf']),float(result['pts'])])
+					sos_data[(game['opponent'],game['gametime'])] = [float(result['fgm']),float(result['fga']),float(result['tpm']),float(result['tpa']),float(result['ftm']),float(result['fta']),float(result['oreb']),float(result['dreb']),float(result['reb']),float(result['ast']),float(result['stl']),float(result['blk']),float(result['tov']),float(result['pf']),float(result['pts'])]
+			# print row
+			# print team_sos
+			# print np.mean(team_sos,axis=0)
+			# print '-'*10
+			team_stats.append(np.mean(team_sos,axis=0))
 		self.X = self.combine_features(self.X,team_stats)
 		return
 
@@ -343,6 +392,38 @@ class CBB():
 			rankings.append([teamresults['rank'],oppresults['rank'],float(teamresults['rank'])-float(oppresults['rank'])])
 			# print [teamresults['rank'],oppresults['rank'],float(teamresults['rank'])-float(oppresults['rank'])]
 		self.X = self.combine_features(self.X,rankings)
+		return
+
+	def add_missed_games_ts(self,n):
+		c = db.cursor()
+		missed_games = []
+
+		for row in self.feature_headers:
+			c.execute("""SELECT games.gameid,gamelog.gameid from games left outer join gamelog on gamelog.gameid = games.gameid and pid=%s where (games.home = %s or games.away = %s) and games.gametime < %s and games.gametime > \
+			(SELECT gametime from games where gametime < %s and (home = %s or away = %s) order by gametime desc LIMIT 1 OFFSET %s)""",\
+				(row['pid'],row['team'],row['team'],row['gametime'],row['gametime'],row['team'],row['team'],n))
+			result = c.fetchall()
+
+			d = []
+			# print '--'*10
+			for game in result:
+				if game['gamelog.gameid'] == None:
+					d.append(0)
+				else:
+					d.append(1)
+
+			missed_games.append(d)
+		self.X = self.combine_features(self.X,missed_games)
+		return		
+
+	def fph_threshold(self,n):
+		below_thresh = []
+		for row in self.feature_headers:
+			if row['fph'] < 10:
+				below_thresh.append(1)
+			else:
+				below_thresh.append(0)
+		self.X = self.combine_features(self.X,below_thresh)
 		return
 
 if __name__ == "__main__":
@@ -405,14 +486,8 @@ if __name__ == "__main__":
 	print 'Finished after %.2f mins\n'%((time.time()-ti)/60.)
 	ti= time.time()
 
-	print 'Games missed...'
-	P.add_missed_games(5)
-	print P.X.shape
-	print 'Finished after %.2f mins\n'%((time.time()-ti)/60.)
-	ti= time.time()
-
-	print 'Team averages limit...'
-	P.add_team_averages_limit(3)
+	print 'Team rankings...' # 
+	P.add_team_rankings()
 	print P.X.shape
 	print 'Finished after %.2f mins\n'%((time.time()-ti)/60.)
 	ti= time.time()
@@ -423,16 +498,57 @@ if __name__ == "__main__":
 	print 'Finished after %.2f mins\n'%((time.time()-ti)/60.)
 	ti= time.time()
 
-	print 'Opponent defense limit...'
-	P.add_opponent_defense_limit(3)
+	print 'Games missed...'
+	P.add_missed_games_ts(3)
 	print P.X.shape
 	print 'Finished after %.2f mins\n'%((time.time()-ti)/60.)
 	ti= time.time()
 
-	print 'Team rankings...'
-	P.add_team_rankings()
+	print 'Opponent defense limit...' # optimized 2016-02-15
+	P.add_opponent_defense_limit(4)
 	print P.X.shape
 	print 'Finished after %.2f mins\n'%((time.time()-ti)/60.)
 	ti= time.time()
 
-	pickle.dump(P,open('../data/train/P_fd_001.p','wb'))
+	##################### TESTING #############################	
+
+	# P = pickle.load(open('../data/train/P_fd_004.p','rb'))
+
+	# print 'Team averages limit...'
+	# P.add_team_averages_limit(1)
+	# print P.X.shape
+	# print 'Finished after %.2f mins\n'%((time.time()-ti)/60.)
+	# ti= time.time()
+
+	####################### DUMP ###########################
+
+	pickle.dump(P,open('../data/train/P_fd_004.p','wb'))
+	
+	####################### REMOVED ###########################
+
+	# print 'Opponent strength of schedule...' # optimized 2016-02-15
+	# P.add_opponent_stength_of_schedule()
+	# print P.X.shape
+	# print 'Finished after %.2f mins\n'%((time.time()-ti)/60.)
+	# ti= time.time()
+
+	# print 'Games missed...'
+	# P.add_missed_games(5)
+	# print P.X.shape
+	# print 'Finished after %.2f mins\n'%((time.time()-ti)/60.)
+	# ti= time.time()
+
+	# print 'Loading player stats for previous year...' # removed 2016-02-15
+	# P.previous_year()
+	# print P.X.shape
+	# print 'Finished after %.2f mins\n'%((time.time()-ti)/60.)
+	# ti= time.time()
+
+	# print 'Adding games played last year...'# removed 2016-02-15
+	# P.games_played_last_year()
+	# print P.X.shape
+	# print 'Finished after %.2f mins\n'%((time.time()-ti)/60.)
+	# ti= time.time()	
+
+	
+

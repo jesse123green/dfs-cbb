@@ -41,12 +41,16 @@ class cbbdataSpider(scrapy.Spider):
       # Player stats
       for row in ['even','odd']:
         item['teamid'] = item['awayteamid']
+        k = 0
         for sel in response.xpath(".//tr[@class='%s']"%row):
           print '* '*30
           player = sel.xpath("td/a/text()").extract()
+
+
+          k += 1
           if len(player) == 0: # check if team stat line
             item['teamid'] = item['hometeamid']
-            continue
+            continue           
           else:
             player = player[0]
           item['playername'] = sel.xpath("td/a/text()").extract()[0]
@@ -76,4 +80,5 @@ class cbbdataSpider(scrapy.Spider):
           item['pf'] = sel.xpath("td[position()=%i]/text()"%(i+12)).extract()[0]
           item['pts'] = sel.xpath("td[position()=%i]/text()"%(i+13)).extract()[0]
 
+          # print item['teamid'],item['playername']
           yield item

@@ -457,7 +457,7 @@ if __name__ == "__main__":
 	t = time.time()
 	ti= time.time()
 
-	opt = lineupOptimizer(excluded_players=['',''],excluded_teams=[],platform=platform)
+	opt = lineupOptimizer(excluded_players=['','',''],excluded_teams=[],platform=platform)
 
 
 	print 'Load Players for Contest...'

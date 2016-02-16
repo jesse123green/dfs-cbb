@@ -1,0 +1,17 @@
+
+
+##### FIND GAMES WITH MISMATCHING TEAM MINUTES ######
+
+select abs(g2.m-g1.m),g1.gameid,gametime,g1.m,g2.m,g1.team,g2.team from (select gameid,team,sum(min) m,gametime from gamelog group by team,gameid) g1,(select gameid,team,sum(min) m from gamelog group by team,gameid) g2 where g2.gameid=g1.gameid and g1.team!=g2.team and 
+g2.team IN (select distinct(team) team from rankings) and 
+g1.team IN (select distinct(team) team from rankings)
+order by abs(g2.m-g1.m) desc,gameid
+
+######################################################
+
+
+##### GAMES WITH ONLY 1 TEAM (INSTEAD OF TWO) ######
+
+select gameid from (select team,gameid from gamelog group by gameid,team) x group by gameid having count(*) <2
+
+######################################################

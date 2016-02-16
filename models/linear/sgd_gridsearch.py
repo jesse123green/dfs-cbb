@@ -33,8 +33,9 @@ def report(grid_scores, n_top=3):
         print("")
 
 
-P = pickle.load(open('../../data/train/P_fd_001.p','rb'))
+P = pickle.load(open('../../data/train/P_fd_001b.p','rb'))
 
+# X = np.hstack((np.array(P.X)[:,:-45],np.array(P.X)[:,-15:]))
 X = np.array(P.X)
 y = np.array(P.y)
 start_size = X.shape[1]
@@ -51,15 +52,15 @@ clf = Pipeline([
 
 
 param_grid = [
-  {'regression__penalty': ['elasticnet'],'regression__l1_ratio':[.05,.15,.5,.85,.95],'regression__epsilon':[1.5],\
-   'regression__loss': ['epsilon_insensitive'],'regression__alpha':[.003,.001,.002,.003,.01],\
-   'regression__eta0':[.001,.003,.005,.01,.03]}
+  {'regression__penalty': ['l1'],'regression__l1_ratio':[.85],'regression__epsilon':[1.5],\
+   'regression__loss': ['epsilon_insensitive'],'regression__alpha':[.0003,.001,.003],\
+   'regression__eta0':[.001,.003,.01]}
  ]
 
 start = time()
 
-cv = cross_validation.ShuffleSplit(X.shape[0], n_iter=30,test_size=0.2, random_state=12)
-grid_search = GridSearchCV(clf, param_grid=param_grid,cv=cv,scoring='mean_absolute_error',n_jobs=6)
+cv = cross_validation.ShuffleSplit(X.shape[0], n_iter=14,test_size=0.2, random_state=12)
+grid_search = GridSearchCV(clf, param_grid=param_grid,cv=cv,scoring='mean_absolute_error',n_jobs=7,verbose=1)
 grid_search.fit(X,y)
 
 print("GridSearchCV took %.2f seconds for %d candidate parameter settings."

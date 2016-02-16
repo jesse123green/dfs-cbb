@@ -68,7 +68,8 @@ def update_results(token):
 			print 'Error for contestid:',v['cid']
 
 		db.commit()
-
+	c2.execute("""DELETE FROM fanduel_entries WHERE entry_fee is null and date(entry_created)< date(NOW())""")
+	db.commit()
 	
 	return
 
@@ -126,7 +127,7 @@ def load_lineups_ids(gameid,token):
 	return entry_count
 
 
-def enter_contest(lineup,contest,token):
+def enter_contest(lineup,gameid,contest,token):
 
 	headers = {'Host': 'api.fanduel.com','Connection': 'keep-alive','Accept': 'application/json, text/plain, */*',\
 	'X-Auth-Token': token,\
@@ -144,7 +145,7 @@ def enter_contest(lineup,contest,token):
 		pos = player.split(fid)[1]
 
 		##### define entry
-		fanduel_lineup[indx[pos]] = {"position":pos,"player":{"id":fid}}
+		fanduel_lineup[indx[pos]] = {"position":pos,"player":{"id":str(gameid)+'-'+str(fid)}}
 		indx[pos] += 1
 		# print pid,pos
 	entry['entries'][0]['roster']['lineup'] = fanduel_lineup
@@ -190,7 +191,7 @@ def update_fanduel_lineups(gameid,lineups,token):
 
 	db = pymysql.connect("localhost","cbb","","cbb",charset="utf8",cursorclass=pymysql.cursors.DictCursor)
 	c = db.cursor()
-	c.execute("""SELECT entryid FROM fanduel_entries WHERE gameid=%s order by size,entry_fee desc""",(gameid,))
+	c.execute("""SELECT entryid,size FROM fanduel_entries fe inner join (SELECT count(*) ecount,contestid from fanduel_entries group by contestid) c on c.contestid=fe.contestid WHERE gameid=%s order by ecount desc,size desc""",(gameid,))
 
 	entries = c.fetchall()
 	n_entries = len(entries)
@@ -199,11 +200,14 @@ def update_fanduel_lineups(gameid,lineups,token):
 	n_lineups = len(lineups)
 
 	### Shuffle entries within lineup interval
+
 	for k in range(int(1.*n_entries/n_lineups)):
 		idx = np.arange(k*n_lineups,(k+1)*n_lineups)
 		shuffled_idx = np.arange(k*n_lineups,(k+1)*n_lineups)
 		np.random.shuffle(shuffled_idx)
 		entries[idx] = entries[shuffled_idx]
+
+	
 
 		
 	### define entry
@@ -227,19 +231,20 @@ def update_fanduel_lineups(gameid,lineups,token):
 			pos = player.split(fid)[1]
 
 			##### define entry
-			fanduel_lineup[indx[pos]] = {"position":pos,"player":{"id":fid}}
+			fanduel_lineup[indx[pos]] = {"position":pos,"player":{"id":str(gameid)+'-'+str(fid)}}
 			indx[pos] += 1
 			# print pid,pos
 		entry['entries'][0]['roster']['lineup'] = fanduel_lineup
 		#### Put it
 		
 		req = requests.put('https://api.fanduel.com/entries/%i'%entryid['entryid'],json=entry,headers=headers,verify=False)
-		print lineup[0],req.status_code,req.text,entryid['entryid']
+		print lineup[0],req.status_code,req.text,entryid['size']
+		# print lineup[0],entryid['size']
 
 	return
 
 if __name__ == '__main__':
-	update_results('43efe5d7e8f1de432641034664718be16cd307ab9e680b63bd3214f050a90321')
+	update_results(load_token())
 
 
 

@@ -20,15 +20,15 @@ def contest_loop(gameid,platform,max_fee=2,max_entries=50,token=''):
 	while n_entries < max_entries:
 		entered_ids = entered_contest_ids(gameid)
 		contest_ids = fetch_contests(gameid,token,max_fee=max_fee,contest_type=[r'50/50',r'CBB Double Up'])
-		entry_attempts = 1
+		entry_attempts = 0
 		for _id in contest_ids:
 			print _id
 			if _id not in entered_ids:
 				print 'ENTERING NEW CONTEST',_id
-				enter_contest(lineup,_id,token)
+				enter_contest(lineup,gameid,_id,token)
+				entry_attempts += 1
 				if (n_entries + entry_attempts) >= max_entries:
 					break
-				entry_attempts += 1
 			else:
 				# print 'OLD CONTEST',_id
 				pass
@@ -36,8 +36,8 @@ def contest_loop(gameid,platform,max_fee=2,max_entries=50,token=''):
 		n_entries = load_lineups_ids(gameid,token)
 		update_results(token)
 		print 'Entered %i total contests.'%n_entries
-
-		time.sleep(600)
+		if (n_entries + entry_attempts) < max_entries:
+			time.sleep(600)
 
 
 

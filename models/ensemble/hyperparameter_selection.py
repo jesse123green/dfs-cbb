@@ -116,11 +116,15 @@ def report(grid_scores, n_top=3):
 ###########################################
 
 
-############ PLAYERS ############ MAE: 5.593 (420)
-P = pickle.load(open('../../data/train/P_fd_001.p','rb'))
-n_estimators = 1500
-params = {'n_estimators': n_estimators, 'max_depth': 4, 'min_samples_split': 5,'subsample':.5,
+############ PLAYERS ############ 
+fname = '../../data/train/P_fd_004_6.p'
+P = pickle.load(open(fname,'rb'))
+n_estimators = 2000
+params = {'n_estimators': n_estimators, 'max_depth': 4, 'min_samples_leaf': 20,'subsample':.3,
 'learning_rate': 0.01, 'loss': 'lad', 'random_state':91}
+
+print fname
+print params
 #######################################
 
 
@@ -146,7 +150,7 @@ print 'Train data shape:',X.shape
 
 start = time()
 all_scores = []
-cv = cross_validation.ShuffleSplit(X.shape[0], n_iter=30,test_size=0.2, random_state=524)
+cv = cross_validation.ShuffleSplit(X.shape[0], n_iter=15,test_size=0.2, random_state=524)
 for train,test in cv:
 
   ###############################################################################
@@ -173,7 +177,7 @@ for train,test in cv:
   for i, y_pred in enumerate(clf.staged_decision_function(X_test)):
       test_score[i] = clf.loss_(y_test, y_pred)
   all_scores.append(test_score)
-  print "Minimum average MAE: %.3f"%np.min(np.mean(all_scores,axis=0))
+  print "Minimum average MAE: %.5f"%np.min(np.mean(all_scores,axis=0))
   print "At feature: %i"%np.argmin(np.mean(all_scores,axis=0))
 
 
