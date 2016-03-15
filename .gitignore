@@ -2,3 +2,4 @@
 data/
 data_time_series/
 .DS_Store
+credentials/
