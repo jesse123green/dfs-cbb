@@ -16,6 +16,9 @@ import multiprocessing as mp
 import pandas as pd
 import itertools
 from blend_models import load_blend_models
+from sklearn.base import clone
+from scipy.stats import boxcox
+from scipy.special import inv_boxcox
 
 class CBB():
 	def __init__(self):
@@ -24,22 +27,39 @@ class CBB():
 		self.X = []
 		self.y = []
 
+def boxcox_fit(y_train):
+  y_min = np.min(y_train)-1
+  y_train_boxcox,_lambda = boxcox(y_train-y_min)
+  return y_train_boxcox,_lambda,y_min
+
+def boxcox_scale_down(y_test,_lambda,y_min):
+  y_test_boxcox = boxcox(y_test-y_min,_lambda)
+  return y_test_boxcox
+
+def boxcox_scale_up(y_box,_lambda,y_min):
+  return inv_boxcox(y_box,_lambda)+y_min
+
 def train_fold(clf,X_train,y_train,train_1,test_1,i,logfit,X_test):
-	print "Fold", i
+	# print "Fold", i
 	X_train_1 = X_train[train_1]
 	y_train_1 = y_train[train_1]
 	X_test_1 = X_train[test_1]
 	y_test_1 = y_train[test_1]
+	
+	_lambda = .4
 	if logfit:
-		y_min = np.min(y_train_1)
-		y_log = np.log(y_train_1-y_min+1)
-		clf.fit(X_train_1, y_log)
+		__,_,y_min = boxcox_fit(y_train_1)
+
+		y_train_boxcox = boxcox_scale_down(y_train_1,_lambda,y_min)
+		clf.fit(X_train_1, y_train_boxcox)
 	else:
 		clf.fit(X_train_1, y_train_1)
 	
 	if logfit:
-		y_pred = np.exp(clf.predict(X_test_1))+y_min-1
-		y_pred_test = np.exp(clf.predict(X_test))+y_min-1
+		y_pred_temp = clf.predict(X_test_1)
+		y_pred = boxcox_scale_up(y_pred_temp,_lambda,y_min)
+		y_pred_test_temp = clf.predict(X_test)
+		y_pred_test = boxcox_scale_up(y_pred_test_temp,_lambda,y_min)
 	else:
 		y_pred = clf.predict(X_test_1)
 		y_pred_test = clf.predict(X_test)
@@ -70,22 +90,41 @@ def train_predict_parallel(clf,X_train,y_train,logfit,skf,X_test):
 
 	return list(output)
 
+def run_blender(reg,X_train,X_test,y_train,y_test,i,C):
+	reg.named_steps['regression'].C = C
+	reg.fit(X_train,y_train)
+	y_predictions = reg.predict(X_test)
+	e = mean_absolute_error(y_predictions,y_test)
+	return (i,e,C)
+
+def blend_parallel(reg,X_train,X_test,y_train,y_test,C_values):
+	pool = mp.Pool(processes=8)
+	results = [pool.apply_async(run_blender, args=(reg,X_train,X_test,y_train,y_test,i,C)) for i, C in enumerate(C_values)]
+	output = [p.get() for p in results]
+
+	pool.close()
+	pool.terminate()
+	pool.join()
+	return list(output)
+
 
 if __name__ == '__main__':
 
 	########### PLAYERS ############ 
-	P = pickle.load(open('../../data/train/P_fd_001.p','rb'))
+	P = pickle.load(open('../../data/train/P_fd_118a.p','rb'))
 	clfs,logfits = load_blend_models()
-	test_size = .15
+	test_size = .1
 	n_folds = 8
-	n_iter = 10
+	n_iter = 20
 
 	'''
-	Best score: 5.557447
-	Best model subset: (0, 1, 2, 3)
-	Best model: reg_norm
-	Best epsilon: 0.03
-	Best C: 20
+	Mean errors for blend on iteration 9:
+	Best score: 5.584824
+	Best model subset: (0, 1) ### (sgd,xgb)
+	Best model: reg
+	Best epsilon: 0.0003
+	Best C: 0.003
+	Best Single Model Errors: 5.61521481593 
 	'''	
 	
 	#######################################
@@ -109,21 +148,21 @@ if __name__ == '__main__':
 	# X = X[idx][:n_sample,:]
 	# y = y[idx][:n_sample]
 
-	# shuffle = True
+	shuffle = True
 
-	# if shuffle:
-		# idx = np.random.permutation(y.size)
-		# X = X[idx]
-		# y = y[idx]
+	if shuffle:
+		idx = np.random.permutation(y.size)
+		X = X[idx]
+		y = y[idx]
 	
 
 	reg_baseline = Pipeline([
-	('regression', LinearSVR(epsilon=0))
+	('regression', LinearSVR(epsilon=0,random_state=208))
 	])
 
 	reg_norm = Pipeline([
 	('scale', preprocessing.StandardScaler()),
-	('regression', LinearSVR(epsilon=0))
+	('regression', LinearSVR(epsilon=0,random_state=208))
 	])
 
 	n_clfs = len(clfs)
@@ -134,8 +173,8 @@ if __name__ == '__main__':
 
 	models = [reg_baseline,reg_norm]
 	model_names = ['reg','reg_norm']
-	C_values = [.0001,.0003,.001,.003,.01,.03,.1,.3,1,3,10,20,30,50,100]
 	epsilon_values = [0,.00001,.00003,.0001,.0003,.001,.003,.01,.03,.1,.3,1,2,3]
+	C_values = [.0001,.0003,.001,.003,.01,.03,.1,.3,1,3,10,20,30,50,100]
 
 	hp_values = []
 
@@ -183,11 +222,21 @@ if __name__ == '__main__':
 		for idx in b:
 			for model in models:
 				for epsilon in epsilon_values:
+					model.named_steps['regression'].epsilon = epsilon
+
+					# ### C values parallel
+					# X_train_blend = dataset_blend_train[:,idx]
+					# X_test_blend = dataset_blend_test[:,idx]
+
+					# output = blend_parallel(model,X_train_blend,X_test_blend,y_train,y_test,C_values)
+					# for i,e,C in output:
+					# 	test_errors[k,hp_i+i] = e
+					# hp_i += len(C_values)
+
+					# serial 
 					for C in C_values:
 						model.named_steps['regression'].C = C
-						model.named_steps['regression'].epsilon = epsilon
 						model.fit(dataset_blend_train[:,idx],y_train)
-						# print reg.named_steps['regression'].coef_,reg.named_steps['regression'].intercept_
 						y_predictions = model.predict(dataset_blend_test[:,idx])
 						e = mean_absolute_error(y_predictions,y_test)
 						test_errors[k,hp_i] = e
@@ -209,3 +258,4 @@ if __name__ == '__main__':
 	print 'Best Single Model Errors:',np.min(np.mean(final_errors,axis=0))
 	print 'Single Model Errors:',np.mean(final_errors,axis=0)
 	# print 'Stacking Errors:',np.mean(test_errors,axis=0)
+

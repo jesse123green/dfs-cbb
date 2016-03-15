@@ -32,7 +32,7 @@ class allgamesSpider(scrapy.Spider):
     def parse(self, response):
       print '* '*50
       item = AllgamesItem()
-      # item['gameday'] = datetime.strptime(response.url.split('=')[-1],'%Y%m%d')
+      item['gameday'] = datetime.strptime(response.url.split('=')[-1],'%Y%m%d')
       for sel in response.xpath("//tr[contains(@class, 'even')]"):
         links = sel.xpath("td/a[contains(@href, 'gameId=')]/@href").extract()
         print links

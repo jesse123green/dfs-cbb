@@ -10,6 +10,7 @@ order by abs(g2.m-g1.m) desc,gameid
 ######################################################
 
 
+
 ##### GAMES WITH ONLY 1 TEAM (INSTEAD OF TWO) ######
 
 select gameid from (select team,gameid from gamelog group by gameid,team) x group by gameid having count(*) <2

@@ -8,6 +8,94 @@ def load_token():
 	f = open('/Users/jessegreen/Documents/fantasy/token.txt','rb')
 	return str(f.readline().strip())
 
+def update_database_contest(contest,contestid):
+	db = pymysql.connect("localhost","cbb","","cbb",charset="utf8",cursorclass=pymysql.cursors.DictCursor)
+	c2 = db.cursor()
+	try:
+		if contest['contests'][0]['started'] == False:
+			size = contest['contests'][0]['size']['max']
+			c2.execute("""UPDATE fanduel_entries SET size=%s WHERE contestid=%s""",\
+			 (size,contestid))			
+		elif contest['contests'][0]['final'] == True:
+			lowest_score = contest['contests'][0]['scoring']['lowest_score']
+			last_winning_score = contest['contests'][0]['scoring']['last_winning_score']
+			highest_score = contest['contests'][0]['scoring']['highest_score']
+			last_winning_rank = contest['contests'][0]['scoring']['last_winning_rank']
+			size = contest['contests'][0]['entries']['count']
+			name = contest['contests'][0]['name']
+			entry_fee = contest['contests'][0]['entry_fee']
+
+			c2.execute("""UPDATE fanduel_entries SET last_winning_score=%s,lowest_score=%s,\
+			 highest_score=%s,last_winning_rank=%s,size=%s,name=%s,entry_fee=%s WHERE contestid=%s""",\
+			 (last_winning_score,lowest_score,highest_score,last_winning_rank,size,name,entry_fee,contestid))
+
+			roster_scores = []
+			for roster in contest['rosters']:
+				roster_scores.append(roster['score'])
+			roster_scores = sorted(roster_scores)
+
+			entry_ranks = []
+			entry_prizes = []
+			entry_ids = []
+			for entry in contest['entries']:
+				entry_ranks.append(entry['rank'])
+				entry_prizes.append(entry['prizes']['total'])
+				entry_ids.append(entry['id'])
+			entryI = np.argsort(entry_ranks)[::-1]
+			for i,ei in enumerate(entryI):
+				c2.execute("""UPDATE fanduel_entries SET rank=%s,prize=%s,score=%s WHERE entryid=%s""",\
+				 (entry_ranks[ei],entry_prizes[ei],roster_scores[i],entry_ids[ei]))
+	except:
+		print 'Error for contestid:',contestid
+
+	c2.execute("""DELETE FROM fanduel_entries WHERE entry_fee is null and date(entry_created) < SUBDATE(CURDATE(),3)""")
+	db.commit()
+	return
+
+def update_database_entry(contest,entryid):
+	db = pymysql.connect("localhost","cbb","","cbb",charset="utf8",cursorclass=pymysql.cursors.DictCursor)
+	c2 = db.cursor()
+	try:
+		if contest['contests'][0]['started'] == False:
+			size = contest['contests'][0]['size']['max']
+			c2.execute("""UPDATE fanduel_entries SET size=%s WHERE entryid=%s""",\
+			 (size,entryid))			
+		elif contest['contests'][0]['final'] == True:
+			lowest_score = contest['contests'][0]['scoring']['lowest_score']
+			last_winning_score = contest['contests'][0]['scoring']['last_winning_score']
+			highest_score = contest['contests'][0]['scoring']['highest_score']
+			last_winning_rank = contest['contests'][0]['scoring']['last_winning_rank']
+			size = contest['contests'][0]['entries']['count']
+			name = contest['contests'][0]['name']
+			entry_fee = contest['contests'][0]['entry_fee']
+
+			c2.execute("""UPDATE fanduel_entries SET last_winning_score=%s,lowest_score=%s,\
+			 highest_score=%s,last_winning_rank=%s,size=%s,name=%s,entry_fee=%s WHERE entryid=%s""",\
+			 (last_winning_score,lowest_score,highest_score,last_winning_rank,size,name,entry_fee,entryid))
+
+			roster_scores = []
+			for roster in contest['rosters']:
+				roster_scores.append(roster['score'])
+			roster_scores = sorted(roster_scores)
+
+			entry_ranks = []
+			entry_prizes = []
+			entry_ids = []
+			for entry in contest['entries']:
+				entry_ranks.append(entry['rank'])
+				entry_prizes.append(entry['prizes']['total'])
+				entry_ids.append(entry['id'])
+			entryI = np.argsort(entry_ranks)[::-1]
+			for i,ei in enumerate(entryI):
+				c2.execute("""UPDATE fanduel_entries SET rank=%s,prize=%s,score=%s WHERE entryid=%s""",\
+				 (entry_ranks[ei],entry_prizes[ei],roster_scores[i],entry_ids[ei]))
+	except:
+		print 'Error for contestid:',contestid
+
+	c2.execute("""DELETE FROM fanduel_entries WHERE entry_fee is null and date(entry_created) < SUBDATE(CURDATE(),3)""")
+	db.commit()
+	return
+
 def update_results(token):
 
 	headers = {'Host': 'api.fanduel.com','Connection': 'keep-alive','Accept': 'application/json, text/plain, */*',\
@@ -22,55 +110,27 @@ def update_results(token):
 	c2 = db.cursor()
 
 	c.execute("""SELECT DISTINCT(contestid) cid FROM fanduel_entries WHERE score IS NULL""")
+	
 
 	for v in c.fetchall():
 		print 'Getting contest:',v['cid']
 		### results
 		req = requests.get('https://api.fanduel.com/contests/%s/entries?page=1&page_size=250&user=2558430'%(v['cid']),headers=headers,verify=False)
 		contest = json.loads(req.text)
+		update_database_contest(contest,v['cid'])
 		# print json.dumps(contest,indent=4)
 
+	c.execute("""SELECT entryid,contestid FROM fanduel_entries WHERE score IS NULL and size=2""")
+	for v in c.fetchall():
+		print 'Getting entry:',v['entryid']
+		req = requests.get('https://api.fanduel.com/entries/%s'%(v['entryid']),headers=headers,verify=False)
 		try:
-			if contest['contests'][0]['started'] == False:
-				size = contest['contests'][0]['size']['max']
-				c2.execute("""UPDATE fanduel_entries SET size=%s WHERE contestid=%s""",\
-				 (size,v['cid']))			
-			elif contest['contests'][0]['final'] == True:
-				lowest_score = contest['contests'][0]['scoring']['lowest_score']
-				last_winning_score = contest['contests'][0]['scoring']['last_winning_score']
-				highest_score = contest['contests'][0]['scoring']['highest_score']
-				last_winning_rank = contest['contests'][0]['scoring']['last_winning_rank']
-				size = contest['contests'][0]['entries']['count']
-				name = contest['contests'][0]['name']
-				entry_fee = contest['contests'][0]['entry_fee']
-
-				c2.execute("""UPDATE fanduel_entries SET last_winning_score=%s,lowest_score=%s,\
-				 highest_score=%s,last_winning_rank=%s,size=%s,name=%s,entry_fee=%s WHERE contestid=%s""",\
-				 (last_winning_score,lowest_score,highest_score,last_winning_rank,size,name,entry_fee,v['cid']))
-
-				roster_scores = []
-				for roster in contest['rosters']:
-					roster_scores.append(roster['score'])
-				roster_scores = sorted(roster_scores)
-
-				entry_ranks = []
-				entry_prizes = []
-				entry_ids = []
-				for entry in contest['entries']:
-					entry_ranks.append(entry['rank'])
-					entry_prizes.append(entry['prizes']['total'])
-					entry_ids.append(entry['id'])
-				entryI = np.argsort(entry_ranks)[::-1]
-				for i,ei in enumerate(entryI):
-					c2.execute("""UPDATE fanduel_entries SET rank=%s,prize=%s,score=%s WHERE entryid=%s""",\
-					 (entry_ranks[ei],entry_prizes[ei],roster_scores[i],entry_ids[ei]))
+			contest = json.loads(req.text)
+			update_database_entry(contest,v['entryid'])
 		except:
-			print 'Error for contestid:',v['cid']
+			print req.text
+			continue
 
-		db.commit()
-	c2.execute("""DELETE FROM fanduel_entries WHERE entry_fee is null and date(entry_created)< date(NOW())""")
-	db.commit()
-	
 	return
 
 

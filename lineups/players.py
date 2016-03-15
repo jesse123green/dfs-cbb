@@ -1,10 +1,11 @@
 import urllib2, json, sys, re, time, pickle, pymysql
 from datetime import datetime,date,timedelta
 import numpy as np
+from scipy.special import inv_boxcox
 
 class CBB():
 
-	model = pickle.load(open('../data/models/model_fd_stacked_001a.p','rb'))
+	model = pickle.load(open('../data/models/model_fd_stacked_109h.p','rb'))
 
 	def __init__(self,pid,pos,team,opp,home,salary,name,season,fid=None):
 		self.X = []
@@ -22,6 +23,8 @@ class CBB():
 		self.fantasy_prediction = 0.
 		self.gamesPlayed = 0
 
+	def boxcox_scale_up(self,y_box,_lambda,y_min):
+		return inv_boxcox(y_box,_lambda)+y_min
 
 	def daterange(self,start_date, end_date):
 		for n in range(int ((end_date - start_date).days)):
@@ -64,7 +67,8 @@ class CBB():
 		return
 
 	def home_away(self):
-		self.X.append(self.home)
+		# self.X.append(self.home)
+		self.X.append(0)
 		return
 
 	def previous_year(self,db):
@@ -107,8 +111,24 @@ class CBB():
 		result = c.fetchall()
 		# print self.pid
 		for game in result:
-			for v in [float(game['fph']),float(game['min']),float(game['fgm']),float(game['fga']),float(game['tpm']),float(game['tpa']),float(game['ftm']),float(game['fta']),float(game['oreb']),float(game['dreb']),float(game['reb']),float(game['ast']),float(game['stl']),float(game['blk']),float(game['tov']),float(game['pf']),float(game['pts'])]:
-				self.X.append(v)
+			try:
+				for v in [float(game['fph']),float(game['min'])]:#,float(game['fgm']),float(game['fga']),float(game['tpm']),float(game['tpa']),float(game['ftm']),float(game['fta']),float(game['oreb']),float(game['dreb']),float(game['reb']),float(game['ast']),float(game['stl']),float(game['blk']),float(game['tov']),float(game['pf']),float(game['pts'])]:
+					self.X.append(v)
+			except:
+				# print 'BAD MINUTES'
+				mins = []
+				for game in result:
+					try:
+						mins.append(float(game['min']))
+					except:
+						pass
+				try:
+					min_avg = np.mean(mins)
+				except:
+					min_avg = 0
+
+				for v in [float(game['fph']),float(min_avg)]:#,float(game['fgm']),float(game['fga']),float(game['tpm']),float(game['tpa']),float(game['ftm']),float(game['fta']),float(game['oreb']),float(game['dreb']),float(game['reb']),float(game['ast']),float(game['stl']),float(game['blk']),float(game['tov']),float(game['pf']),float(game['pts'])]:
+					self.X.append(v)		
 		return
 
 
@@ -116,7 +136,7 @@ class CBB():
 
 		c = db.cursor()
 		c.execute("""SELECT SUM(fgm)/SUM(min) fgm,SUM(fga)/SUM(min) fga,SUM(tpm)/SUM(min) tpm,SUM(tpa)/SUM(min) tpa,SUM(ftm)/SUM(min) ftm,SUM(fta)/SUM(min) fta,SUM(oreb)/SUM(min) oreb,SUM(dreb)/SUM(min) dreb,SUM(reb)/SUM(min) reb,SUM(ast)/SUM(min) ast,SUM(stl)/SUM(min) stl,SUM(blk)/SUM(min) blk,SUM(tov)/SUM(min) tov,SUM(pf)/SUM(min) pf,SUM(pts)/SUM(min) pts \
-				FROM gamelog,games where gamelog.team=%s and games.season=%s and games.gameid=gamelog.gameid""",\
+				FROM gamelog,games where gamelog.team=%s and games.season=%s and games.gameid=gamelog.gameid and min is not null""",\
 			(self.team,self.season))
 		result = c.fetchone()
 		for v in [float(result['fgm']),float(result['fga']),float(result['tpm']),float(result['tpa']),float(result['ftm']),float(result['fta']),float(result['oreb']),float(result['dreb']),float(result['reb']),float(result['ast']),float(result['stl']),float(result['blk']),float(result['tov']),float(result['pf']),float(result['pts'])]:
@@ -127,7 +147,7 @@ class CBB():
 
 		c = db.cursor()
 		c.execute("""SELECT SUM(fgm)/SUM(min) fgm,SUM(fga)/SUM(min) fga,SUM(tpm)/SUM(min) tpm,SUM(tpa)/SUM(min) tpa,SUM(ftm)/SUM(min) ftm,SUM(fta)/SUM(min) fta,SUM(oreb)/SUM(min) oreb,SUM(dreb)/SUM(min) dreb,SUM(reb)/SUM(min) reb,SUM(ast)/SUM(min) ast,SUM(stl)/SUM(min) stl,SUM(blk)/SUM(min) blk,SUM(tov)/SUM(min) tov,SUM(pf)/SUM(min) pf,SUM(pts)/SUM(min) pts \
-				FROM gamelog,games where gamelog.team=%s and games.season=%s and games.gameid=gamelog.gameid""",\
+				FROM gamelog,games where gamelog.team=%s and games.season=%s and games.gameid=gamelog.gameid and min is not null""",\
 			(self.opp,self.season))
 		result = c.fetchone()
 		for v in [float(result['fgm']),float(result['fga']),float(result['tpm']),float(result['tpa']),float(result['ftm']),float(result['fta']),float(result['oreb']),float(result['dreb']),float(result['reb']),float(result['ast']),float(result['stl']),float(result['blk']),float(result['tov']),float(result['pf']),float(result['pts'])]:
@@ -137,7 +157,7 @@ class CBB():
 	def add_opponent_averages_limit(self,n,db):
 
 		c = db.cursor()
-		c.execute("""SELECT SUM(fgm)/SUM(min) fgm,SUM(fga)/SUM(min) fga,SUM(tpm)/SUM(min) tpm,SUM(tpa)/SUM(min) tpa,SUM(ftm)/SUM(min) ftm,SUM(fta)/SUM(min) fta,SUM(oreb)/SUM(min) oreb,SUM(dreb)/SUM(min) dreb,SUM(reb)/SUM(min) reb,SUM(ast)/SUM(min) ast,SUM(stl)/SUM(min) stl,SUM(blk)/SUM(min) blk,SUM(tov)/SUM(min) tov,SUM(pf)/SUM(min) pf,SUM(pts)/SUM(min) pts FROM gamelog WHERE team=%s and gametime > (SELECT gametime from games where (home = %s or away = %s) order by gametime desc LIMIT 1 OFFSET %s)""",\
+		c.execute("""SELECT SUM(fgm)/SUM(min) fgm,SUM(fga)/SUM(min) fga,SUM(tpm)/SUM(min) tpm,SUM(tpa)/SUM(min) tpa,SUM(ftm)/SUM(min) ftm,SUM(fta)/SUM(min) fta,SUM(oreb)/SUM(min) oreb,SUM(dreb)/SUM(min) dreb,SUM(reb)/SUM(min) reb,SUM(ast)/SUM(min) ast,SUM(stl)/SUM(min) stl,SUM(blk)/SUM(min) blk,SUM(tov)/SUM(min) tov,SUM(pf)/SUM(min) pf,SUM(pts)/SUM(min) pts FROM gamelog WHERE min is not null and team=%s and gametime > (SELECT gametime from games where (home = %s or away = %s) order by gametime desc LIMIT 1 OFFSET %s)""",\
 			(self.opp,self.opp,self.opp,n))
 		result = c.fetchone()
 		for v in [float(result['fgm']),float(result['fga']),float(result['tpm']),float(result['tpa']),float(result['ftm']),float(result['fta']),float(result['oreb']),float(result['dreb']),float(result['reb']),float(result['ast']),float(result['stl']),float(result['blk']),float(result['tov']),float(result['pf']),float(result['pts'])]:
@@ -148,7 +168,7 @@ class CBB():
 	def add_team_averages_limit(self,n,db):
 
 		c = db.cursor()
-		c.execute("""SELECT SUM(fgm)/SUM(min) fgm,SUM(fga)/SUM(min) fga,SUM(tpm)/SUM(min) tpm,SUM(tpa)/SUM(min) tpa,SUM(ftm)/SUM(min) ftm,SUM(fta)/SUM(min) fta,SUM(oreb)/SUM(min) oreb,SUM(dreb)/SUM(min) dreb,SUM(reb)/SUM(min) reb,SUM(ast)/SUM(min) ast,SUM(stl)/SUM(min) stl,SUM(blk)/SUM(min) blk,SUM(tov)/SUM(min) tov,SUM(pf)/SUM(min) pf,SUM(pts)/SUM(min) pts FROM gamelog WHERE team=%s and gametime > (SELECT gametime from games where (home = %s or away = %s) order by gametime desc LIMIT 1 OFFSET %s)""",\
+		c.execute("""SELECT SUM(fgm)/SUM(min) fgm,SUM(fga)/SUM(min) fga,SUM(tpm)/SUM(min) tpm,SUM(tpa)/SUM(min) tpa,SUM(ftm)/SUM(min) ftm,SUM(fta)/SUM(min) fta,SUM(oreb)/SUM(min) oreb,SUM(dreb)/SUM(min) dreb,SUM(reb)/SUM(min) reb,SUM(ast)/SUM(min) ast,SUM(stl)/SUM(min) stl,SUM(blk)/SUM(min) blk,SUM(tov)/SUM(min) tov,SUM(pf)/SUM(min) pf,SUM(pts)/SUM(min) pts FROM gamelog WHERE min is not null and team=%s and gametime > (SELECT gametime from games where (home = %s or away = %s) order by gametime desc LIMIT 1 OFFSET %s)""",\
 			(self.team,self.team,self.team,n))
 		result = c.fetchone()
 
@@ -160,11 +180,11 @@ class CBB():
 	def add_opponent_position_defense(self,db):
 		c = db.cursor()
 
-		c.execute("""SELECT SUM(fgm)/SUM(min) fgm,SUM(fga)/SUM(min) fga,SUM(tpm)/SUM(min) tpm,SUM(tpa)/SUM(min) tpa,SUM(ftm)/SUM(min) ftm,SUM(fta)/SUM(min) fta,SUM(oreb)/SUM(min) oreb,SUM(dreb)/SUM(min) dreb,SUM(reb)/SUM(min) reb,SUM(ast)/SUM(min) ast,SUM(stl)/SUM(min) stl,SUM(blk)/SUM(min) blk,SUM(tov)/SUM(min) tov,SUM(pf)/SUM(min) pf,SUM(pts)/SUM(min) pts \
-				FROM gamelog,games where gamelog.pos=%s and gamelog.team != %s  and (games.home = %s or games.away = %s) and games.season=%s and games.gameid=gamelog.gameid""",\
+		c.execute("""SELECT (SUM(pts)+SUM(reb)*1.2+SUM(ast)*1.5+SUM(blk)*2+SUM(stl)*2-SUM(tov))/SUM(min) fph,SUM(fgm)/SUM(min) fgm,SUM(fga)/SUM(min) fga,SUM(tpm)/SUM(min) tpm,SUM(tpa)/SUM(min) tpa,SUM(ftm)/SUM(min) ftm,SUM(fta)/SUM(min) fta,SUM(oreb)/SUM(min) oreb,SUM(dreb)/SUM(min) dreb,SUM(reb)/SUM(min) reb,SUM(ast)/SUM(min) ast,SUM(stl)/SUM(min) stl,SUM(blk)/SUM(min) blk,SUM(tov)/SUM(min) tov,SUM(pf)/SUM(min) pf,SUM(pts)/SUM(min) pts \
+				FROM gamelog,games where min is not null and gamelog.pos=%s and gamelog.team != %s  and (games.home = %s or games.away = %s) and games.season=%s and games.gameid=gamelog.gameid""",\
 			(self.pos_short,self.opp,self.opp,self.opp,self.season))
 		result = c.fetchone()
-		for v in [float(result['fgm']),float(result['fga']),float(result['tpm']),float(result['tpa']),float(result['ftm']),float(result['fta']),float(result['oreb']),float(result['dreb']),float(result['reb']),float(result['ast']),float(result['stl']),float(result['blk']),float(result['tov']),float(result['pf']),float(result['pts'])]:
+		for v in [float(result['fph'])]:#,float(result['fgm']),float(result['fga']),float(result['tpm']),float(result['tpa']),float(result['ftm']),float(result['fta']),float(result['oreb']),float(result['dreb']),float(result['reb']),float(result['ast']),float(result['stl']),float(result['blk']),float(result['tov']),float(result['pf']),float(result['pts'])]:
 			self.X.append(v)
 		return
 
@@ -172,11 +192,11 @@ class CBB():
 
 		c = db.cursor()
 
-		c.execute("""SELECT SUM(fgm)/SUM(min) fgm,SUM(fga)/SUM(min) fga,SUM(tpm)/SUM(min) tpm,SUM(tpa)/SUM(min) tpa,SUM(ftm)/SUM(min) ftm,SUM(fta)/SUM(min) fta,SUM(oreb)/SUM(min) oreb,SUM(dreb)/SUM(min) dreb,SUM(reb)/SUM(min) reb,SUM(ast)/SUM(min) ast,SUM(stl)/SUM(min) stl,SUM(blk)/SUM(min) blk,SUM(tov)/SUM(min) tov,SUM(pf)/SUM(min) pf,SUM(pts)/SUM(min) pts \
-				FROM gamelog,games where gamelog.team != %s  and (games.home = %s or games.away = %s) and games.season=%s and games.gameid=gamelog.gameid""",\
+		c.execute("""SELECT (SUM(pts)+SUM(reb)*1.2+SUM(ast)*1.5+SUM(blk)*2+SUM(stl)*2-SUM(tov))/SUM(min) fph,SUM(fgm)/SUM(min) fgm,SUM(fga)/SUM(min) fga,SUM(tpm)/SUM(min) tpm,SUM(tpa)/SUM(min) tpa,SUM(ftm)/SUM(min) ftm,SUM(fta)/SUM(min) fta,SUM(oreb)/SUM(min) oreb,SUM(dreb)/SUM(min) dreb,SUM(reb)/SUM(min) reb,SUM(ast)/SUM(min) ast,SUM(stl)/SUM(min) stl,SUM(blk)/SUM(min) blk,SUM(tov)/SUM(min) tov,SUM(pf)/SUM(min) pf,SUM(pts)/SUM(min) pts \
+				FROM gamelog,games where min is not null and gamelog.team != %s  and (games.home = %s or games.away = %s) and games.season=%s and games.gameid=gamelog.gameid""",\
 			(self.opp,self.opp,self.opp,self.season))
 		result = c.fetchone()
-		for v in [float(result['fgm']),float(result['fga']),float(result['tpm']),float(result['tpa']),float(result['ftm']),float(result['fta']),float(result['oreb']),float(result['dreb']),float(result['reb']),float(result['ast']),float(result['stl']),float(result['blk']),float(result['tov']),float(result['pf']),float(result['pts'])]:
+		for v in [float(result['fph'])]:#,float(result['fgm']),float(result['fga']),float(result['tpm']),float(result['tpa']),float(result['ftm']),float(result['fta']),float(result['oreb']),float(result['dreb']),float(result['reb']),float(result['ast']),float(result['stl']),float(result['blk']),float(result['tov']),float(result['pf']),float(result['pts'])]:
 			self.X.append(v)
 		return
 
@@ -184,7 +204,7 @@ class CBB():
 
 		c = db.cursor()
 
-		c.execute("""SELECT SUM(fgm)/SUM(min) fgm,SUM(fga)/SUM(min) fga,SUM(tpm)/SUM(min) tpm,SUM(tpa)/SUM(min) tpa,SUM(ftm)/SUM(min) ftm,SUM(fta)/SUM(min) fta,SUM(oreb)/SUM(min) oreb,SUM(dreb)/SUM(min) dreb,SUM(reb)/SUM(min) reb,SUM(ast)/SUM(min) ast,SUM(stl)/SUM(min) stl,SUM(blk)/SUM(min) blk,SUM(tov)/SUM(min) tov,SUM(pf)/SUM(min) pf,SUM(pts)/SUM(min) pts FROM gamelog WHERE gamelog.team != %s  and (home = %s or away = %s) and gametime > (SELECT gametime from games where (home = %s or away = %s) order by gametime desc LIMIT 1 OFFSET %s)""",\
+		c.execute("""SELECT SUM(fgm)/SUM(min) fgm,SUM(fga)/SUM(min) fga,SUM(tpm)/SUM(min) tpm,SUM(tpa)/SUM(min) tpa,SUM(ftm)/SUM(min) ftm,SUM(fta)/SUM(min) fta,SUM(oreb)/SUM(min) oreb,SUM(dreb)/SUM(min) dreb,SUM(reb)/SUM(min) reb,SUM(ast)/SUM(min) ast,SUM(stl)/SUM(min) stl,SUM(blk)/SUM(min) blk,SUM(tov)/SUM(min) tov,SUM(pf)/SUM(min) pf,SUM(pts)/SUM(min) pts FROM gamelog WHERE min is not null and gamelog.team != %s  and (home = %s or away = %s) and gametime > (SELECT gametime from games where (home = %s or away = %s) order by gametime desc LIMIT 1 OFFSET %s)""",\
 			(self.opp,self.opp,self.opp,self.opp,self.opp,n))
 		result = c.fetchone()
 		for v in [float(result['fgm']),float(result['fga']),float(result['tpm']),float(result['tpa']),float(result['ftm']),float(result['fta']),float(result['oreb']),float(result['dreb']),float(result['reb']),float(result['ast']),float(result['stl']),float(result['blk']),float(result['tov']),float(result['pf']),float(result['pts'])]:
@@ -201,6 +221,22 @@ class CBB():
 		result = c.fetchone()
 		game_cnt = result['game_cnt']
 		self.X.append(min(5,game_cnt))
+
+		return
+
+	def add_missed_games_ts(self,n,db):
+		c = db.cursor()
+
+		c.execute("""SELECT games.gameid,gamelog.gameid from games left outer join gamelog on gamelog.gameid = games.gameid and pid=%s where (games.home = %s or games.away = %s) and games.gametime > \
+		(SELECT gametime from games where (home = %s or away = %s) order by gametime desc LIMIT 1 OFFSET %s)""",\
+			(self.pid,self.team,self.team,self.team,self.team,n))
+		result = c.fetchall()
+
+		for game in result:
+			if game['gamelog.gameid'] == None:
+				self.X.append(0)
+			else:
+				self.X.append(1)
 
 		return
 
@@ -273,19 +309,28 @@ class CBB():
 		self.load_data(db)
 		if self.gamesPlayed < 4:
 			return
-		self.add_games_played()
-		self.position()
+		# self.add_games_played()
+		# self.position()
+		# self.home_away()
+		# self.past_n_games(5,db)
+		# self.add_team_averages(db)
+		# self.add_opponent_averages(db)
+		# self.add_opponent_position_defense(db)
+		# self.add_opponent_defense_all(db)
+		# self.add_missed_games(5,db)
+		# self.add_team_averages_limit(3,db)
+		# self.add_opponent_averages_limit(3,db)
+		# self.add_opponent_defense_limit(3,db)
+		# self.add_team_rankings(db)
+		
+		
 		self.home_away()
-		self.past_n_games(5,db)
-		self.add_team_averages(db)
+		self.position()
+		self.past_n_games(7,db)
 		self.add_opponent_averages(db)
-		self.add_opponent_position_defense(db)
 		self.add_opponent_defense_all(db)
-		self.add_missed_games(5,db)
-		self.add_team_averages_limit(3,db)
-		self.add_opponent_averages_limit(3,db)
-		self.add_opponent_defense_limit(3,db)
-		self.add_team_rankings(db)
+		self.add_opponent_position_defense(db)
+		self.add_missed_games_ts(6,db)
 		return
 
 	def predict(self):
@@ -295,7 +340,7 @@ class CBB():
 		# self.fantasy_prediction = np.random.rand()
 		# return
 		if self.gamesPlayed > 9 and self.is_valid:
-			data = np.array(self.X,dtype=float)
+			data = np.array(self.X,dtype=float).reshape(1,-1)
 
 			#### SINGLE ########
 			# model = pickle.load(open('../data/models/model_players_fd_GBR_200.p','rb'))
@@ -307,12 +352,15 @@ class CBB():
 			y_preds = []
 			for reg,logfit in zip(self.model['stage1'],self.model['logfits']):
 				if logfit:
-					y_preds.append(np.exp(reg.predict(data)[0])+self.model['ymin']-1)
+					# y_preds.append(np.exp(reg.predict(data)[0])+self.model['ymin']-1)
+					p_temp = reg.predict(data.reshape((1,-1)))[0]
+					y_preds.append(self.boxcox_scale_up(p_temp,self.model['_lambda'],self.model['ymin']))					
 				else:
-					y_preds.append(reg.predict(data)[0])
-			p = self.model['stage2'].predict(y_preds)[0]
+					y_preds.append(reg.predict(data.reshape((1,-1)))[0])
+			p = self.model['stage2'].predict(np.array(y_preds).reshape(1,-1))[0]
 			#######################
 			# print p,type(p),self.pid,self.name
+			# p = np.random.rand()*30
 			self.fantasy_prediction = float(p)
 
 			if self.fantasy_prediction < 0 or self.fantasy_prediction > 5 or True:

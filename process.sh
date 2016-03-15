@@ -1,6 +1,6 @@
 #!/bin/bash
 
-GAMEID="14713"
+GAMEID="14978"
 
 # echo --- getting new games ---
 # cd scrapers/allgames
@@ -17,10 +17,10 @@ GAMEID="14713"
 # scrapy crawl rankings
 # cd ../..
 
-echo --- getting fanduel data ---
-cd lineups
-python fanduel_players.py "$GAMEID"
-cd ..
+# echo --- getting fanduel data ---
+# cd lineups
+# python fanduel_players.py "$GAMEID"
+# cd ..
 
 echo --- housekeeping ---
 cd housekeeping

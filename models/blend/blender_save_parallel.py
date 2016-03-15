@@ -14,6 +14,20 @@ from sklearn.ensemble import GradientBoostingRegressor as GBR
 from sklearn.ensemble import RandomForestRegressor,ExtraTreesRegressor
 import multiprocessing as mp
 from blend_models import load_blend_models
+from scipy.stats import boxcox
+from scipy.special import inv_boxcox
+
+def boxcox_fit(y_train):
+  y_min = np.min(y_train)-1
+  y_train_boxcox,_lambda = boxcox(y_train-y_min)
+  return y_train_boxcox,_lambda,y_min
+
+def boxcox_scale_down(y_test,_lambda,y_min):
+  y_test_boxcox = boxcox(y_test-y_min,_lambda)
+  return y_test_boxcox
+
+def boxcox_scale_up(y_box,_lambda,y_min):
+  return inv_boxcox(y_box,_lambda)+y_min
 
 def train_fold(clf,X_train,y_train,train_1,test_1,i,logfit):
 	print "Fold", i
@@ -21,17 +35,23 @@ def train_fold(clf,X_train,y_train,train_1,test_1,i,logfit):
 	y_train_1 = y_train[train_1]
 	X_test_1 = X_train[test_1]
 	y_test_1 = y_train[test_1]
+
+	_lambda = .5
 	if logfit:
-		y_min = np.min(y_train_1)
-		y_log = np.log(y_train_1-y_min+1)
-		clf.fit(X_train_1, y_log)
+		__,_,y_min = boxcox_fit(y_train_1)
+
+		y_train_boxcox = boxcox_scale_down(y_train_1,_lambda,y_min)
+		clf.fit(X_train_1, y_train_boxcox)
 	else:
 		clf.fit(X_train_1, y_train_1)
 	
 	if logfit:
-		y_pred = np.exp(clf.predict(X_test_1))+y_min-1
+		y_pred_temp = clf.predict(X_test_1)
+		y_pred = boxcox_scale_up(y_pred_temp,_lambda,y_min)
+
 	else:
 		y_pred = clf.predict(X_test_1)
+
 	
 	return tuple((test_1,y_pred))
 
@@ -73,10 +93,10 @@ if __name__ == '__main__':
 	###########################################
 
 	########### PLAYERS ############ 
-	P = pickle.load(open('../../data/train/P_fd_001.p','rb'))
+	P = pickle.load(open('../../data/train/P_fd_109h.p','rb'))
 	clfs,logfits = load_blend_models()
 	n_folds = 8
-	epsilon_final = 0.03
+	epsilon_final = 3e-05
 	C_final = 20
 	reg = Pipeline([
 	('scale', preprocessing.StandardScaler()),
@@ -106,6 +126,8 @@ if __name__ == '__main__':
 	n_clfs = len(clfs)
 	final_model = {}
 
+	_lambda = .5
+	__,_,y_min = boxcox_fit(y)
 
 	print "Creating train and test sets for blending."
 
@@ -127,10 +149,10 @@ if __name__ == '__main__':
 			clf.named_steps['regression'].n_jobs = 7
 		except:
 			pass
+
 		if logfit:
-			y_min = np.min(y)
-			y_log = np.log(y-y_min+1)
-			clf.fit(X, y_log)
+			y_boxcox = boxcox_scale_down(y,_lambda,y_min)
+			clf.fit(X, y_boxcox)		
 		else:
 			clf.fit(X,y)
 		
@@ -141,6 +163,7 @@ if __name__ == '__main__':
 	final_model['stage1'] = clfs
 	final_model['stage2'] = reg
 	final_model['logfits'] = logfits
-	final_model['ymin'] = np.min(y)
+	final_model['ymin'] = y_min
+	final_model['_lambda'] = _lambda
 
-	pickle.dump(final_model,open('../../data/models/model_fd_stacked_002.p','wb'))
+	pickle.dump(final_model,open('../../data/models/model_fd_stacked_109h.p','wb'))

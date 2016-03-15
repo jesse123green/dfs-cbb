@@ -11,4 +11,5 @@ import scrapy
 class AllgamesItem(scrapy.Item):
     # define the fields for your item here like:
     gid = scrapy.Field()
+    gameday = scrapy.Field()
     pass

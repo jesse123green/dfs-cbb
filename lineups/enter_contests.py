@@ -16,6 +16,7 @@ def contest_loop(gameid,platform,max_fee=2,max_entries=50,token=''):
 
 
 	n_entries = load_lineups_ids(gameid,token)
+	print 'Entered %i contests.'%n_entries
 	update_results(token)
 	while n_entries < max_entries:
 		entered_ids = entered_contest_ids(gameid)
@@ -36,7 +37,7 @@ def contest_loop(gameid,platform,max_fee=2,max_entries=50,token=''):
 		n_entries = load_lineups_ids(gameid,token)
 		update_results(token)
 		print 'Entered %i total contests.'%n_entries
-		if (n_entries + entry_attempts) < max_entries:
+		if n_entries < max_entries:
 			time.sleep(600)
 
 

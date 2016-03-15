@@ -15,8 +15,8 @@ class AllgamesPipeline(object):
       c = self.db.cursor()
       print item
       print '* '*50
-      c.execute("""INSERT IGNORE INTO games (gameid) VALUES (%s)""",
-                (item['gid'])
+      c.execute("""INSERT IGNORE INTO games (gameid,gametime) VALUES (%s,%s)""",
+                (item['gid'],item['gameday'])
                  )
       c.execute("""UPDATE games set season=2015 WHERE gametime > '2015-07-01' and gametime < '2016-07-01'""")
       self.db.commit()

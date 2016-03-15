@@ -7,6 +7,8 @@ from sklearn.linear_model import Ridge,Lasso,LinearRegression,SGDRegressor
 import numpy as np
 from sklearn.ensemble import GradientBoostingRegressor as GBR
 from sklearn.ensemble import RandomForestRegressor,ExtraTreesRegressor
+import xgboost as xgb
+from sklearn.decomposition import PCA
 
 class CBB():
 	def __init__(self):
@@ -17,44 +19,44 @@ class CBB():
 
 def load_blend_models():
 
-	n_estimators = 1020
-	params = {'n_estimators': n_estimators, 'max_depth': 4, 'min_samples_split': 5,'subsample':.5,
+	n_estimators = 1095
+	params = {'n_estimators': n_estimators, 'max_depth': 4, 'min_samples_leaf': 20,'subsample':.3,
 	'learning_rate': 0.01, 'loss': 'lad', 'random_state':91}
 	reg_gbr = GBR(**params)
-
+	
 	reg_rf = Pipeline([
 	('scale', preprocessing.StandardScaler()),
-	('regression', RandomForestRegressor(max_depth=20,max_features=.5,n_estimators=750,min_samples_split=5,n_jobs=1,random_state=2))
+	('regression', RandomForestRegressor(max_depth=20,max_features=.5,n_estimators=750,min_samples_leaf=20,n_jobs=1,random_state=2))
 	])
 
 	reg_et = Pipeline([
 	('scale', preprocessing.StandardScaler()),
-	('regression', ExtraTreesRegressor(max_depth=20,max_features=.5,n_estimators=750,min_samples_split=5,n_jobs=1,random_state=2))
+	('regression', ExtraTreesRegressor(max_depth=20,max_features=.5,n_estimators=750,min_samples_leaf=20,n_jobs=1,random_state=2))
 	])
 
-	# C = .3
-	# gamma=.003
-	# epsilon = .3
-	# reg_svr = Pipeline([
-	# ('scale', preprocessing.StandardScaler()),
-	# ('regression', SVR(epsilon=epsilon, gamma=gamma,C=C))
-	# ])
+
+	params_xgb = {'n_estimators': 780, 'max_depth': 4, 'subsample':.45,'learning_rate': 0.01,'seed':88}
+	reg_xgb = xgb.XGBRegressor(**params_xgb)
 	
 	epsilon=1.5
-	alpha=.002
-	eta0=.005
+	alpha=.003
+	eta0=.003
 	loss='epsilon_insensitive'
 	l1_ratio=.85
-	penalty='elasticnet'
+	penalty='l1'
 
 	reg_sgd = Pipeline([
+	('pca',PCA(n_components = 45)),
 	('scale', preprocessing.StandardScaler()),
-	('regression', SGDRegressor(n_iter=50,random_state=14,epsilon=epsilon,alpha=alpha,eta0=eta0,loss='epsilon_insensitive',l1_ratio=.85,penalty='elasticnet'))
+	('regression', SGDRegressor(n_iter=50,random_state=14,epsilon=epsilon,alpha=alpha,eta0=eta0,loss=loss,l1_ratio=l1_ratio,penalty=penalty))
 	])	
 
 
-	regs = [reg_sgd,reg_rf,reg_et,reg_gbr]
+	regs = [reg_sgd,reg_rf,reg_xgb,reg_gbr]
 	logfits = [False,True,True,False]
 
+	# regs = [reg_sgd,reg_xgb]
+	# logfits = [False,True]
 
 	return regs,logfits
+

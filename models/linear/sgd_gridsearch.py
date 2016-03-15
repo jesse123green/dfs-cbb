@@ -12,6 +12,7 @@ from sklearn.svm import SVC
 from sklearn.grid_search import GridSearchCV
 from time import time
 from operator import itemgetter
+from sklearn.decomposition import PCA
 
 class CBB():
 
@@ -33,7 +34,7 @@ def report(grid_scores, n_top=3):
         print("")
 
 
-P = pickle.load(open('../../data/train/P_fd_001b.p','rb'))
+P = pickle.load(open('../../data/train/P_fd_118a.p','rb'))
 
 # X = np.hstack((np.array(P.X)[:,:-45],np.array(P.X)[:,-15:]))
 X = np.array(P.X)
@@ -43,8 +44,9 @@ start_size = X.shape[1]
 X_fp = X[:,0]
 print "Accuracy using unweighted fp mean: %.3f"%mean_absolute_error(X_fp,y)
 print 'Train data shape:',X.shape
-
+sys.exit()
 clf = Pipeline([
+('pca',PCA(n_components = X.shape[1])),
 ('scale', preprocessing.StandardScaler()),
 ('regression', SGDRegressor(n_iter=50,random_state=14))
 ])
@@ -53,14 +55,14 @@ clf = Pipeline([
 
 param_grid = [
   {'regression__penalty': ['l1'],'regression__l1_ratio':[.85],'regression__epsilon':[1.5],\
-   'regression__loss': ['epsilon_insensitive'],'regression__alpha':[.0003,.001,.003],\
-   'regression__eta0':[.001,.003,.01]}
+   'regression__loss': ['epsilon_insensitive'],'regression__alpha':[.003],\
+   'regression__eta0':[.003],'pca__n_components':[47,46,45,44,43,42]}
  ]
 
 start = time()
 
-cv = cross_validation.ShuffleSplit(X.shape[0], n_iter=14,test_size=0.2, random_state=12)
-grid_search = GridSearchCV(clf, param_grid=param_grid,cv=cv,scoring='mean_absolute_error',n_jobs=7,verbose=1)
+cv = cross_validation.ShuffleSplit(X.shape[0], n_iter=45,test_size=0.2, random_state=524)
+grid_search = GridSearchCV(clf, param_grid=param_grid,cv=cv,scoring='mean_absolute_error',n_jobs=8,verbose=1)
 grid_search.fit(X,y)
 
 print("GridSearchCV took %.2f seconds for %d candidate parameter settings."

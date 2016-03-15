@@ -23,62 +23,86 @@ class cbbdataSpider(scrapy.Spider):
       print '* '*50
 
       item = CbbDataItem()
-      for sel in response.xpath("//div[@class='team away']"):
-        item['awayteamid'] = sel.xpath(".//a/@href").extract()[0].split('/')[-2]
-        item['awayteamname'] = sel.xpath(".//a/text()").extract()[0]
-      for sel in response.xpath("//div[@class='team home']"):
-        item['hometeamid'] = sel.xpath(".//a/@href").extract()[0].split('/')[-2]
-        item['hometeamname'] = sel.xpath(".//a/text()").extract()[0]
-      datestr = response.xpath("//div[@class='game-time-location']/p/text()").extract()[0]
-      if datestr[1] == ':':
-        datestr = '0' + datestr
-      if datestr[-8] == ' ':
-        datestr = datestr.replace(datestr[-7:],'0' + datestr[-7:])
-      datestr = datestr.replace('ET,','')
-      item['gametime'] = datetime.strptime(datestr,'%I:%M %p  %B %d, %Y')
+      k = 0
+      for sel in response.xpath("//div[@class='team-info']"):
+        if k == 0:
+          item['awayteamid'] = sel.xpath(".//a/@href").extract()[0].split('/')[-1]
+          item['awayteamname'] = sel.xpath(".//a/span/text()").extract()[0]
+        else:
+          item['hometeamid'] = sel.xpath(".//a/@href").extract()[0].split('/')[-1]
+          item['hometeamname'] = sel.xpath(".//a/span/text()").extract()[0]
+        k +=1
+      # for sel in response.xpath("//div[@class='team-info']"):
+      #   item['hometeamid'] = sel.xpath(".//a/@href").extract()[0].split('/')[-1]
+      #   item['hometeamname'] = sel.xpath(".//a/span/text()").extract()[0]
+      # datestr = response.xpath("//div[@class='game-time-location']/p/text()").extract()[0]
+      # if datestr[1] == ':':
+      #   datestr = '0' + datestr
+      # if datestr[-8] == ' ':
+      #   datestr = datestr.replace(datestr[-7:],'0' + datestr[-7:])
+      # datestr = datestr.replace('ET,','')
+      # item['gametime'] = datetime.strptime(datestr,'%I:%M %p  %B %d, %Y')
       item['gameid'] = response.url.split('=')[-1]
-
-      # Player stats
-      for row in ['even','odd']:
-        item['teamid'] = item['awayteamid']
-        k = 0
-        for sel in response.xpath(".//tr[@class='%s']"%row):
-          print '* '*30
-          player = sel.xpath("td/a/text()").extract()
-
-
-          k += 1
-          if len(player) == 0: # check if team stat line
+      item['gametime'] = ''
+      teamid_k = 0
+      for game in response.xpath(".//div[@id='gamepackage-box-score']"):
+        for sel in game.xpath(".//table[@class='mod-data']"):
+          if teamid_k == 0:
+            item['teamid'] = item['awayteamid']
+          else:
             item['teamid'] = item['hometeamid']
-            continue           
-          else:
-            player = player[0]
-          item['playername'] = sel.xpath("td/a/text()").extract()[0]
-          item['playerid'] = sel.xpath("td/a/@href").extract()[0].split('/')[-2]
+          teamid_k += 1
+          for section in sel.xpath("tbody"):
+            for aplayer in section.xpath("tr"):
 
-          if (len(sel.xpath("td[position()=2]/text()").extract()[0].split('-')) == 1):
-            i = 1
-            item['min'] = sel.xpath("td[position()=%i]/text()"%(i+1)).extract()[0]
-          else:
-            item['min'] = None
-            i = 0
+              player = aplayer.xpath("td/a/text()").extract()
 
-          item['pos'] = sel.xpath("td[position()=1]/text()").extract()[0].replace(',','').strip()
-          item['fgm'] = sel.xpath("td[position()=%i]/text()"%(i+2)).extract()[0].split('-')[0]
-          item['fga'] = sel.xpath("td[position()=%i]/text()"%(i+2)).extract()[0].split('-')[1]
-          item['tpm'] = sel.xpath("td[position()=%i]/text()"%(i+3)).extract()[0].split('-')[0]
-          item['tpa'] = sel.xpath("td[position()=%i]/text()"%(i+3)).extract()[0].split('-')[1]
-          item['ftm'] = sel.xpath("td[position()=%i]/text()"%(i+4)).extract()[0].split('-')[0]
-          item['fta'] = sel.xpath("td[position()=%i]/text()"%(i+4)).extract()[0].split('-')[1]
-          item['oreb'] = sel.xpath("td[position()=%i]/text()"%(i+5)).extract()[0]
-          item['dreb'] = sel.xpath("td[position()=%i]/text()"%(i+6)).extract()[0]
-          item['reb'] = sel.xpath("td[position()=%i]/text()"%(i+7)).extract()[0]
-          item['ast'] = sel.xpath("td[position()=%i]/text()"%(i+8)).extract()[0]
-          item['stl'] = sel.xpath("td[position()=%i]/text()"%(i+9)).extract()[0]
-          item['blk'] = sel.xpath("td[position()=%i]/text()"%(i+10)).extract()[0]
-          item['to'] = sel.xpath("td[position()=%i]/text()"%(i+11)).extract()[0]
-          item['pf'] = sel.xpath("td[position()=%i]/text()"%(i+12)).extract()[0]
-          item['pts'] = sel.xpath("td[position()=%i]/text()"%(i+13)).extract()[0]
+              k += 1
+              
 
-          # print item['teamid'],item['playername']
-          yield item
+              if len(player) == 0: # check if team stat line
+                # item['teamid'] = item['hometeamid']
+                continue           
+              else:
+                player = player[0]
+
+              # print aplayer.xpath(".//td[@class='name']/a/text()").extract()[0]
+              item['playername'] = aplayer.xpath(".//td[@class='name']/a/text()").extract()[0]
+              # print '-'*30
+              # print player
+              try:
+                item['playerid'] = int(aplayer.xpath(".//td[@class='name']/a/@href").extract()[0].split('/')[-1])
+              except:
+                print 'playerid error',player
+                continue
+              
+              try:
+                item['min'] = int(aplayer.xpath(".//td[@class='min']")[0].xpath("text()").extract()[0])
+              except:
+                item['min'] = None
+              try:
+                item['pos'] = aplayer.xpath(".//td[@class='name']/span[@class='position']/text()").extract()[0]
+              except:
+                item['pos'] = 'NA'
+
+              try:
+                item['fgm'] = int(aplayer.xpath(".//td[@class='fg']")[0].xpath("text()").extract()[0].split('-')[0])
+                item['fga'] = int(aplayer.xpath(".//td[@class='fg']")[0].xpath("text()").extract()[0].split('-')[1])
+                item['tpm'] = int(aplayer.xpath(".//td[@class='3pt']")[0].xpath("text()").extract()[0].split('-')[0])
+                item['tpa'] = int(aplayer.xpath(".//td[@class='3pt']")[0].xpath("text()").extract()[0].split('-')[1])
+                item['ftm'] = int(aplayer.xpath(".//td[@class='ft']")[0].xpath("text()").extract()[0].split('-')[0])
+                item['fta'] = int(aplayer.xpath(".//td[@class='ft']")[0].xpath("text()").extract()[0].split('-')[1])
+                item['oreb'] = int(aplayer.xpath(".//td[@class='oreb']")[0].xpath("text()").extract()[0])
+                item['dreb'] = int(aplayer.xpath(".//td[@class='dreb']")[0].xpath("text()").extract()[0])
+                item['reb'] = int(aplayer.xpath(".//td[@class='reb']")[0].xpath("text()").extract()[0])
+                item['ast'] = int(aplayer.xpath(".//td[@class='ast']")[0].xpath("text()").extract()[0])
+                item['stl'] = int(aplayer.xpath(".//td[@class='stl']")[0].xpath("text()").extract()[0])
+                item['blk'] = int(aplayer.xpath(".//td[@class='blk']")[0].xpath("text()").extract()[0])
+                item['to'] = int(aplayer.xpath(".//td[@class='to']")[0].xpath("text()").extract()[0])
+                item['pf'] = int(aplayer.xpath(".//td[@class='pf']")[0].xpath("text()").extract()[0])
+                item['pts'] = int(aplayer.xpath(".//td[@class='pts']")[0].xpath("text()").extract()[0])
+              except:
+                print 'stat error',player
+                continue
+              print item
+              yield item

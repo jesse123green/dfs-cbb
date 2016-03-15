@@ -101,13 +101,13 @@ class CBB():
 		gp = []
 		k = 0
 		for row in self.feature_headers:
-			gp.append([row['game_count']])
-			# if row['game_count'] < 15:
-			# 	gp.append([1.,0.,0.])
-			# elif row['game_count'] < 20:
-			# 	gp.append([0.,1.,0.])
-			# else:
-			# 	gp.append([0.,0.,1.])
+			# gp.append([row['game_count']])
+			if row['game_count'] < 15:
+				gp.append([1.,0.,0.])
+			elif row['game_count'] < 20:
+				gp.append([0.,1.,0.])
+			else:
+				gp.append([0.,0.,1.])
 
 		self.X = self.combine_features(self.X,gp)
 		return
@@ -212,7 +212,7 @@ class CBB():
 				FROM gamelog,games where gamelog.team=%s and games.gametime < %s and games.season=%s and games.gameid=gamelog.gameid and gamelog.min is not null""",\
 				(row['team'],row['gametime'],row['season']))
 			result = c.fetchone()
-			team_stats.append([float(result['fph'])])#,float(result['fgm']),float(result['fga']),float(result['tpm']),float(result['tpa']),float(result['ftm']),float(result['fta']),float(result['oreb']),float(result['dreb']),float(result['reb']),float(result['ast']),float(result['stl']),float(result['blk']),float(result['tov']),float(result['pf']),float(result['pts'])])
+			team_stats.append([float(result['fgm']),float(result['fga']),float(result['tpm']),float(result['tpa']),float(result['ftm']),float(result['fta']),float(result['oreb']),float(result['dreb']),float(result['reb']),float(result['ast']),float(result['stl']),float(result['blk']),float(result['tov']),float(result['pf']),float(result['pts'])])
 			# print [float(result['fgm']),float(result['fga']),float(result['tpm']),float(result['tpa']),float(result['ftm']),float(result['fta']),float(result['oreb']),float(result['dreb']),float(result['reb']),float(result['ast']),float(result['stl']),float(result['blk']),float(result['tov']),float(result['pf']),float(result['pts'])]
 		self.X = self.combine_features(self.X,team_stats)
 		return
@@ -256,7 +256,7 @@ class CBB():
 			c.execute("""SELECT (SUM(pts)+SUM(reb)*1.2+SUM(ast)*1.5+SUM(blk)*2+SUM(stl)*2-SUM(tov))/SUM(min) fph, SUM(fgm)/SUM(min) fgm,SUM(fga)/SUM(min) fga,SUM(tpm)/SUM(min) tpm,SUM(tpa)/SUM(min) tpa,SUM(ftm)/SUM(min) ftm,SUM(fta)/SUM(min) fta,SUM(oreb)/SUM(min) oreb,SUM(dreb)/SUM(min) dreb,SUM(reb)/SUM(min) reb,SUM(ast)/SUM(min) ast,SUM(stl)/SUM(min) stl,SUM(blk)/SUM(min) blk,SUM(tov)/SUM(min) tov,SUM(pf)/SUM(min) pf,SUM(pts)/SUM(min) pts FROM gamelog WHERE min is not null and team=%s and gametime < %s and gametime > (SELECT gametime from games where gametime < %s and (home = %s or away = %s) order by gametime desc LIMIT 1 OFFSET %s)""",\
 				(row['opponent'],row['gametime'],row['gametime'],row['opponent'],row['opponent'],n))
 			result = c.fetchone()
-			team_stats.append([float(result['fgm'])])#float(result['fgm']),float(result['fga']),float(result['tpm']),float(result['tpa']),float(result['ftm']),float(result['fta']),float(result['oreb']),float(result['dreb']),float(result['reb']),float(result['ast']),float(result['stl']),float(result['blk']),float(result['tov']),float(result['pf']),float(result['pts'])])
+			team_stats.append([float(result['fgm']),float(result['fga']),float(result['tpm']),float(result['tpa']),float(result['ftm']),float(result['fta']),float(result['oreb']),float(result['dreb']),float(result['reb']),float(result['ast']),float(result['stl']),float(result['blk']),float(result['tov']),float(result['pf']),float(result['pts'])])
 			# print [float(result['fgm']),float(result['fga']),float(result['tpm']),float(result['tpa']),float(result['ftm']),float(result['fta']),float(result['oreb']),float(result['dreb']),float(result['reb']),float(result['ast']),float(result['stl']),float(result['blk']),float(result['tov']),float(result['pf']),float(result['pts'])]
 		self.X = self.combine_features(self.X,team_stats)
 		return
@@ -274,7 +274,7 @@ class CBB():
 				FROM gamelog,games where gamelog.pos=%s and gamelog.team != %s  and (games.home = %s or games.away = %s) and games.gametime < %s and games.season=%s and games.gameid=gamelog.gameid and gamelog.min is not null""",\
 				(row['pos'],row['opponent'],row['opponent'],row['opponent'],row['gametime'],row['season']))
 			result = c.fetchone()
-			team_stats.append([float(result['fph'])])#,float(result['fgm']),float(result['fga']),float(result['tpm']),float(result['tpa']),float(result['ftm']),float(result['fta']),float(result['oreb']),float(result['dreb']),float(result['reb']),float(result['ast']),float(result['stl']),float(result['blk']),float(result['tov']),float(result['pf']),float(result['pts'])])
+			team_stats.append([float(result['fgm']),float(result['fga']),float(result['tpm']),float(result['tpa']),float(result['ftm']),float(result['fta']),float(result['oreb']),float(result['dreb']),float(result['reb']),float(result['ast']),float(result['stl']),float(result['blk']),float(result['tov']),float(result['pf']),float(result['pts'])])
 
 		self.X = self.combine_features(self.X,team_stats)
 		return
@@ -289,7 +289,7 @@ class CBB():
 				FROM gamelog,games where gamelog.team != %s  and (games.home = %s or games.away = %s) and games.gametime < %s and games.season=%s and games.gameid=gamelog.gameid and gamelog.min is not null""",\
 				(row['opponent'],row['opponent'],row['opponent'],row['gametime'],row['season']))
 			result = c.fetchone()
-			team_stats.append([float(result['fph'])])#,float(result['fgm']),float(result['fga']),float(result['tpm']),float(result['tpa']),float(result['ftm']),float(result['fta']),float(result['oreb']),float(result['dreb']),float(result['reb']),float(result['ast']),float(result['stl']),float(result['blk']),float(result['tov']),float(result['pf']),float(result['pts'])])
+			team_stats.append([float(result['fgm']),float(result['fga']),float(result['tpm']),float(result['tpa']),float(result['ftm']),float(result['fta']),float(result['oreb']),float(result['dreb']),float(result['reb']),float(result['ast']),float(result['stl']),float(result['blk']),float(result['tov']),float(result['pf']),float(result['pts'])])
 
 		self.X = self.combine_features(self.X,team_stats)
 		return
@@ -307,7 +307,7 @@ class CBB():
 			# print row
 			# print result
 			# print '-'*20
-			team_stats.append([float(result['fph'])])#,float(result['fgm']),float(result['fga']),float(result['tpm']),float(result['tpa']),float(result['ftm']),float(result['fta']),float(result['oreb']),float(result['dreb']),float(result['reb']),float(result['ast']),float(result['stl']),float(result['blk']),float(result['tov']),float(result['pf']),float(result['pts'])])
+			team_stats.append([float(result['fgm']),float(result['fga']),float(result['tpm']),float(result['tpa']),float(result['ftm']),float(result['fta']),float(result['oreb']),float(result['dreb']),float(result['reb']),float(result['ast']),float(result['stl']),float(result['blk']),float(result['tov']),float(result['pf']),float(result['pts'])])
 
 		self.X = self.combine_features(self.X,team_stats)
 		return
@@ -463,8 +463,32 @@ if __name__ == "__main__":
 	print 'Finished after %.2f mins\n'%((time.time()-ti)/60.)
 	ti= time.time()
 
+	print 'Adding games played...'
+	P.games_played()
+	print P.X.shape
+	print 'Finished after %.2f mins\n'%((time.time()-ti)/60.)
+	ti= time.time()
+
+	print 'Adding position categories...'
+	P.position()
+	print P.X.shape
+	print 'Finished after %.2f mins\n'%((time.time()-ti)/60.)
+	ti= time.time()
+
 	print 'Adding home/away...'
 	P.home_away()
+	print P.X.shape
+	print 'Finished after %.2f mins\n'%((time.time()-ti)/60.)
+	ti= time.time()
+
+	print 'Adding past n games...'
+	P.past_n_games(5)
+	print P.X.shape
+	print 'Finished after %.2f mins\n'%((time.time()-ti)/60.)
+	ti= time.time()
+
+	print 'Adding team stats...'
+	P.add_team_averages()
 	print P.X.shape
 	print 'Finished after %.2f mins\n'%((time.time()-ti)/60.)
 	ti= time.time()
@@ -488,25 +512,31 @@ if __name__ == "__main__":
 	ti= time.time()
 
 	print 'Games missed...'
-	P.add_missed_games_ts(6)
+	P.add_missed_games(5)
 	print P.X.shape
 	print 'Finished after %.2f mins\n'%((time.time()-ti)/60.)
 	ti= time.time()
 
-	print 'Adding games played...'
-	P.games_played()
+	print 'Team averages limit...'
+	P.add_team_averages_limit(3)
 	print P.X.shape
 	print 'Finished after %.2f mins\n'%((time.time()-ti)/60.)
 	ti= time.time()
 
-	print 'Adding past n games...'
-	P.past_n_games(10)
+	print 'Opponent averages limit...'
+	P.add_opponent_averages_limit(3)
 	print P.X.shape
 	print 'Finished after %.2f mins\n'%((time.time()-ti)/60.)
 	ti= time.time()
 
-	print 'Adding position categories...'
-	P.position()
+	print 'Opponent defense limit...'
+	P.add_opponent_defense_limit(3)
+	print P.X.shape
+	print 'Finished after %.2f mins\n'%((time.time()-ti)/60.)
+	ti= time.time()
+	
+	print 'Team rankings...' # 
+	P.add_team_rankings()
 	print P.X.shape
 	print 'Finished after %.2f mins\n'%((time.time()-ti)/60.)
 	ti= time.time()
@@ -519,25 +549,17 @@ if __name__ == "__main__":
 	# for k in range(8,11):
 	# 	P = pickle.load(open('../data/train/P_fd_004.p','rb'))
 
-	# 	print 'Team averages limit...'
-	# 	P.add_team_averages_limit(k)
-	# 	print P.X.shape
-	# 	print 'Finished after %.2f mins\n'%((time.time()-ti)/60.)
-	# 	ti= time.time()
+
 	# 	pickle.dump(P,open('../data/train/P_fd_004_%i.p'%k,'wb'))
 
 	####################### DUMP ###########################
 
 
 
-	pickle.dump(P,open('../data/train/P_fd_118b.p','wb'))
+	pickle.dump(P,open('../data/train/P_fd_118b_old.p','wb'))
 
 	####################### REMOVED ###########################
-	# print 'Adding team stats...'
-	# P.add_team_averages()
-	# print P.X.shape
-	# print 'Finished after %.2f mins\n'%((time.time()-ti)/60.)
-	# ti= time.time()
+
 
 	# print 'Games missed...'
 	# P.add_missed_games(2)
@@ -546,6 +568,12 @@ if __name__ == "__main__":
 	# ti= time.time()
 
 	####################### UNUSED ###########################
+
+	# print 'Opponent defense limit...'
+	# P.add_opponent_defense_limit_categories(3)
+	# print P.X.shape
+	# print 'Finished after %.2f mins\n'%((time.time()-ti)/60.)
+	# ti= time.time()
 
 	# print 'Opponent strength of schedule...' # optimized 2016-02-15
 	# P.add_opponent_stength_of_schedule()
@@ -564,27 +592,3 @@ if __name__ == "__main__":
 	# print P.X.shape
 	# print 'Finished after %.2f mins\n'%((time.time()-ti)/60.)
 	# ti= time.time()	
-
-	# print 'Team rankings...' # 
-	# P.add_team_rankings()
-	# print P.X.shape
-	# print 'Finished after %.2f mins\n'%((time.time()-ti)/60.)
-	# ti= time.time()
-
-	# print 'Team averages limit...'
-	# P.add_team_averages_limit(3)
-	# print P.X.shape
-	# print 'Finished after %.2f mins\n'%((time.time()-ti)/60.)
-	# ti= time.time()
-
-	# print 'Opponent averages limit...'
-	# P.add_opponent_averages_limit(6)
-	# print P.X.shape
-	# print 'Finished after %.2f mins\n'%((time.time()-ti)/60.)
-	# ti= time.time()
-
-	# print 'Opponent defense limit...'
-	# P.add_opponent_defense_limit_categories(5)
-	# print P.X.shape
-	# print 'Finished after %.2f mins\n'%((time.time()-ti)/60.)
-	# ti= time.time()

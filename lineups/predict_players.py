@@ -42,6 +42,7 @@ def get_players(gameid,platform,season):
 
 		pool = multiprocessing.Pool(processes=8)
 		results = [pool.apply_async(create_player, args=(result['pid'],result['position'],result['team'],result['opp'],result['home'],result['salary'],result['name'],season,result['fid'])) for result in c.fetchall()]
+
 		output = [p.get() for p in results]
 		pool.close()
 		pool.terminate()
