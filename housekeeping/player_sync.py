@@ -4,7 +4,10 @@ import pymysql
 import sys
 
 def sync_players(gameid):
-	db = pymysql.connect("localhost","cbb","","cbb",charset="utf8")
+	dbc = json.load(open('../credentials/db.json','rb'))
+	live = dbc[dbc['live']]
+	db = pymysql.connect(live['host'],live['user'],live['pw'],live['db'],charset="utf8",cursorclass=pymysql.cursors.DictCursor)
+
 
 	c = db.cursor()
 	c2 = db.cursor()

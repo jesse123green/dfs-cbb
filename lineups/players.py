@@ -5,7 +5,7 @@ from scipy.special import inv_boxcox
 
 class CBB():
 
-	model = pickle.load(open('../data/models/model_fd_stacked_109h.p','rb'))
+	model = pickle.load(open('../data/models/model_fd_stacked_120a.p','rb'))
 
 	def __init__(self,pid,pos,team,opp,home,salary,name,season,fid=None):
 		self.X = []
@@ -112,7 +112,7 @@ class CBB():
 		# print self.pid
 		for game in result:
 			try:
-				for v in [float(game['fph']),float(game['min'])]:#,float(game['fgm']),float(game['fga']),float(game['tpm']),float(game['tpa']),float(game['ftm']),float(game['fta']),float(game['oreb']),float(game['dreb']),float(game['reb']),float(game['ast']),float(game['stl']),float(game['blk']),float(game['tov']),float(game['pf']),float(game['pts'])]:
+				for v in [float(game['fph']),float(game['min']),float(game['fgm']),float(game['fga']),float(game['tpm']),float(game['tpa']),float(game['ftm']),float(game['fta']),float(game['oreb']),float(game['dreb']),float(game['reb']),float(game['ast']),float(game['stl']),float(game['blk']),float(game['tov']),float(game['pf']),float(game['pts'])]:
 					self.X.append(v)
 			except:
 				# print 'BAD MINUTES'
@@ -127,7 +127,7 @@ class CBB():
 				except:
 					min_avg = 0
 
-				for v in [float(game['fph']),float(min_avg)]:#,float(game['fgm']),float(game['fga']),float(game['tpm']),float(game['tpa']),float(game['ftm']),float(game['fta']),float(game['oreb']),float(game['dreb']),float(game['reb']),float(game['ast']),float(game['stl']),float(game['blk']),float(game['tov']),float(game['pf']),float(game['pts'])]:
+				for v in [float(game['fph']),float(min_avg),float(game['fgm']),float(game['fga']),float(game['tpm']),float(game['tpa']),float(game['ftm']),float(game['fta']),float(game['oreb']),float(game['dreb']),float(game['reb']),float(game['ast']),float(game['stl']),float(game['blk']),float(game['tov']),float(game['pf']),float(game['pts'])]:
 					self.X.append(v)		
 		return
 
@@ -252,16 +252,16 @@ class CBB():
 		return
 
 	def add_games_played(self):
-
-		if self.gamesPlayed < 15:
-			for v in [1.,0.,0.]:
-				self.X.append(v)
-		elif self.gamesPlayed < 20:
-			for v in [0.,1.,0.]:
-				self.X.append(v)
-		else:
-			for v in [0.,0.,1.]:
-				self.X.append(v)		
+		self.X.append(self.gamesPlayed)
+		# if self.gamesPlayed < 15:
+		# 	for v in [1.,0.,0.]:
+		# 		self.X.append(v)
+		# elif self.gamesPlayed < 20:
+		# 	for v in [0.,1.,0.]:
+		# 		self.X.append(v)
+		# else:
+		# 	for v in [0.,0.,1.]:
+		# 		self.X.append(v)		
 		return
 
 	def add_team_rankings(self,db):
@@ -304,12 +304,14 @@ class CBB():
 		return
 
 	def populate_data(self):
-		db = pymysql.connect("localhost","cbb","","cbb",charset="utf8",cursorclass=pymysql.cursors.DictCursor)
+		dbc = json.load(open('../credentials/db.json','rb'))
+		live = dbc[dbc['live']]
+		db = pymysql.connect(live['host'],live['user'],live['pw'],live['db'],charset="utf8",cursorclass=pymysql.cursors.DictCursor)
+
 		self.historical_game_count(db)
 		self.load_data(db)
 		if self.gamesPlayed < 4:
 			return
-		# self.add_games_played()
 		# self.position()
 		# self.home_away()
 		# self.past_n_games(5,db)
@@ -321,16 +323,17 @@ class CBB():
 		# self.add_team_averages_limit(3,db)
 		# self.add_opponent_averages_limit(3,db)
 		# self.add_opponent_defense_limit(3,db)
-		# self.add_team_rankings(db)
 		
 		
 		self.home_away()
-		self.position()
-		self.past_n_games(7,db)
 		self.add_opponent_averages(db)
 		self.add_opponent_defense_all(db)
 		self.add_opponent_position_defense(db)
 		self.add_missed_games_ts(6,db)
+		self.add_games_played()
+		self.past_n_games(10,db)
+		self.position()
+		self.add_team_rankings(db)
 		return
 
 	def predict(self):

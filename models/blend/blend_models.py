@@ -19,7 +19,7 @@ class CBB():
 
 def load_blend_models():
 
-	n_estimators = 1095
+	n_estimators = 992
 	params = {'n_estimators': n_estimators, 'max_depth': 4, 'min_samples_leaf': 20,'subsample':.3,
 	'learning_rate': 0.01, 'loss': 'lad', 'random_state':91}
 	reg_gbr = GBR(**params)
@@ -35,18 +35,18 @@ def load_blend_models():
 	])
 
 
-	params_xgb = {'n_estimators': 780, 'max_depth': 4, 'subsample':.45,'learning_rate': 0.01,'seed':88}
+	params_xgb = {'n_estimators': 920, 'max_depth': 4, 'subsample':.45,'learning_rate': 0.01,'seed':88}
 	reg_xgb = xgb.XGBRegressor(**params_xgb)
 	
 	epsilon=1.5
 	alpha=.003
-	eta0=.003
+	eta0=.002
 	loss='epsilon_insensitive'
 	l1_ratio=.85
 	penalty='l1'
 
 	reg_sgd = Pipeline([
-	('pca',PCA(n_components = 45)),
+	('pca',PCA(n_components = 47)),
 	('scale', preprocessing.StandardScaler()),
 	('regression', SGDRegressor(n_iter=50,random_state=14,epsilon=epsilon,alpha=alpha,eta0=eta0,loss=loss,l1_ratio=l1_ratio,penalty=penalty))
 	])	

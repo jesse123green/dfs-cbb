@@ -9,7 +9,10 @@ def load_token():
 	return str(f.readline().strip())
 
 def update_database_contest(contest,contestid):
-	db = pymysql.connect("localhost","cbb","","cbb",charset="utf8",cursorclass=pymysql.cursors.DictCursor)
+	dbc = json.load(open('../../credentials/db.json','rb'))
+	live = dbc[dbc['live']]
+	db = pymysql.connect(live['host'],live['user'],live['pw'],live['db'],charset="utf8",cursorclass=pymysql.cursors.DictCursor)
+
 	c2 = db.cursor()
 	try:
 		if contest['contests'][0]['started'] == False:
@@ -53,7 +56,10 @@ def update_database_contest(contest,contestid):
 	return
 
 def update_database_entry(contest,entryid):
-	db = pymysql.connect("localhost","cbb","","cbb",charset="utf8",cursorclass=pymysql.cursors.DictCursor)
+	dbc = json.load(open('../../credentials/db.json','rb'))
+	live = dbc[dbc['live']]
+	db = pymysql.connect(live['host'],live['user'],live['pw'],live['db'],charset="utf8",cursorclass=pymysql.cursors.DictCursor)
+
 	c2 = db.cursor()
 	try:
 		if contest['contests'][0]['started'] == False:
@@ -105,7 +111,10 @@ def update_results(token):
 	'Referer': 'https://www.fanduel.com/games','Accept-Encoding': 'gzip, deflate, sdch','Accept-Language': 'en-US,en;q=0.8'}
 
 
-	db = pymysql.connect("localhost","cbb","","cbb",charset="utf8",cursorclass=pymysql.cursors.DictCursor)
+	dbc = json.load(open('../../credentials/db.json','rb'))
+	live = dbc[dbc['live']]
+	db = pymysql.connect(live['host'],live['user'],live['pw'],live['db'],charset="utf8",cursorclass=pymysql.cursors.DictCursor)
+
 	c = db.cursor()
 	c2 = db.cursor()
 
@@ -135,7 +144,10 @@ def update_results(token):
 
 
 def entered_contest_ids(gameid):
-	db = pymysql.connect("localhost","cbb","","cbb",charset="utf8",cursorclass=pymysql.cursors.DictCursor)
+	dbc = json.load(open('../../credentials/db.json','rb'))
+	live = dbc[dbc['live']]
+	db = pymysql.connect(live['host'],live['user'],live['pw'],live['db'],charset="utf8",cursorclass=pymysql.cursors.DictCursor)
+
 	c = db.cursor()
 	c.execute("""SELECT DISTINCT(contestid) FROM fanduel_entries WHERE gameid=%s""",(gameid,))
 	return [x['contestid'] for x in c.fetchall()]
@@ -150,7 +162,10 @@ def load_lineups_ids(gameid,token):
 	'Referer': 'https://www.fanduel.com/games','Accept-Encoding': 'gzip, deflate, sdch','Accept-Language': 'en-US,en;q=0.8'}
 
 
-	db = pymysql.connect("localhost","cbb","","cbb",charset="utf8",cursorclass=pymysql.cursors.DictCursor)
+	dbc = json.load(open('../../credentials/db.json','rb'))
+	live = dbc[dbc['live']]
+	db = pymysql.connect(live['host'],live['user'],live['pw'],live['db'],charset="utf8",cursorclass=pymysql.cursors.DictCursor)
+
 	c = db.cursor()
 
 	### current rosters
@@ -249,7 +264,10 @@ def update_fanduel_lineups(gameid,lineups,token):
 	'Referer': 'https://www.fanduel.com/games','Accept-Encoding': 'gzip, deflate, sdch','Accept-Language': 'en-US,en;q=0.8'}
 
 
-	db = pymysql.connect("localhost","cbb","","cbb",charset="utf8",cursorclass=pymysql.cursors.DictCursor)
+	dbc = json.load(open('../../credentials/db.json','rb'))
+	live = dbc[dbc['live']]
+	db = pymysql.connect(live['host'],live['user'],live['pw'],live['db'],charset="utf8",cursorclass=pymysql.cursors.DictCursor)
+
 	c = db.cursor()
 	c.execute("""SELECT entryid,size FROM fanduel_entries fe inner join (SELECT count(*) ecount,contestid from fanduel_entries group by contestid) c on c.contestid=fe.contestid WHERE gameid=%s order by ecount desc,size desc""",(gameid,))
 

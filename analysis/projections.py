@@ -4,7 +4,10 @@ import datetime
 import pylab as plt
 import numpy as np
 
-db = pymysql.connect("localhost","cbb","","cbb",charset="utf8",cursorclass=pymysql.cursors.DictCursor)
+dbc = json.load(open('../credentials/db.json','rb'))
+live = dbc[dbc['live']]
+db = pymysql.connect(live['host'],live['user'],live['pw'],live['db'],charset="utf8",cursorclass=pymysql.cursors.DictCursor)
+
 c = db.cursor()
 
 # c.execute("""SELECT fppg,pfp from fanduel_contests where pfp > 0 limit 5000""")

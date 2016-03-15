@@ -117,7 +117,7 @@ def report(grid_scores, n_top=3):
 
 
 ############ PLAYERS ############ 
-fname = '../../data/train/P_fd_118b_old.p'
+fname = '../../data/train/P_fd_119a.p'
 P = pickle.load(open(fname,'rb'))
 n_estimators = 2000
 params = {'n_estimators': n_estimators, 'max_depth': 4, 'min_samples_leaf': 20,'subsample':.3,

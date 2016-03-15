@@ -33,7 +33,10 @@ def create_player_dk(pid,position,team,opp,home,salary,name,season,dkid):
 	return P
 
 def get_players(gameid,platform,season):
-	db = pymysql.connect("localhost","cbb","","cbb",charset="utf8",cursorclass=pymysql.cursors.DictCursor)
+	dbc = json.load(open('../credentials/db.json','rb'))
+	live = dbc[dbc['live']]
+	db = pymysql.connect(live['host'],live['user'],live['pw'],live['db'],charset="utf8",cursorclass=pymysql.cursors.DictCursor)
+
 	c = db.cursor()
 
 	if platform == 'fanduel':

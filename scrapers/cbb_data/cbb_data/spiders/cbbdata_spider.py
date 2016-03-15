@@ -11,7 +11,10 @@ class cbbdataSpider(scrapy.Spider):
     name = "cbbdata"
     allowed_domains = ["espn.go.com"]
 
-    db = pymysql.connect("localhost","cbb","","cbb",charset="utf8")
+    dbc = json.load(open('../../../../credentials/db.json','rb'))
+    live = dbc[dbc['live']]
+    db = pymysql.connect(live['host'],live['user'],live['pw'],live['db'],charset="utf8",cursorclass=pymysql.cursors.DictCursor)
+
     c = db.cursor()
     c.execute("""SELECT gameid from games WHERE home is null""")
 

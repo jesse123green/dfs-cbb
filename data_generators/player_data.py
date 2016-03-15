@@ -2,7 +2,10 @@ import urllib2, json, sys, re, time, pickle, pymysql
 from datetime import datetime,date,timedelta
 import numpy as np
 
-db = pymysql.connect("localhost","cbb","","cbb",charset="utf8",cursorclass=pymysql.cursors.DictCursor)
+dbc = json.load(open('../credentials/db.json','rb'))
+live = dbc[dbc['live']]
+db = pymysql.connect(live['host'],live['user'],live['pw'],live['db'],charset="utf8",cursorclass=pymysql.cursors.DictCursor)
+
 
 class CBB():
 
@@ -415,6 +418,7 @@ class CBB():
 			teamresults = c.fetchone()
 			oppresults = c2.fetchone()
 			rankings.append([teamresults['rank'],oppresults['rank'],float(teamresults['rank'])-float(oppresults['rank'])])
+			# rankings.append([float(teamresults['rank'])-float(oppresults['rank'])])
 			# print [teamresults['rank'],oppresults['rank'],float(teamresults['rank'])-float(oppresults['rank'])]
 		self.X = self.combine_features(self.X,rankings)
 		return
@@ -511,8 +515,13 @@ if __name__ == "__main__":
 	print 'Finished after %.2f mins\n'%((time.time()-ti)/60.)
 	ti= time.time()
 	
-	# P = pickle.load(open('../data/train/P_fd_117a.p','rb'))
+	print 'Team rankings...' # 
+	P.add_team_rankings()
+	print P.X.shape
+	print 'Finished after %.2f mins\n'%((time.time()-ti)/60.)
+	ti= time.time()
 
+	# P = pickle.load(open('../data/train/P_fd_118b.p','rb'))
 
 	##################### TESTING #############################	
 
@@ -530,7 +539,7 @@ if __name__ == "__main__":
 
 
 
-	pickle.dump(P,open('../data/train/P_fd_118b.p','wb'))
+	pickle.dump(P,open('../data/train/P_fd_120a.p','wb'))
 
 	####################### REMOVED ###########################
 	# print 'Adding team stats...'
@@ -564,12 +573,6 @@ if __name__ == "__main__":
 	# print P.X.shape
 	# print 'Finished after %.2f mins\n'%((time.time()-ti)/60.)
 	# ti= time.time()	
-
-	# print 'Team rankings...' # 
-	# P.add_team_rankings()
-	# print P.X.shape
-	# print 'Finished after %.2f mins\n'%((time.time()-ti)/60.)
-	# ti= time.time()
 
 	# print 'Team averages limit...'
 	# P.add_team_averages_limit(3)

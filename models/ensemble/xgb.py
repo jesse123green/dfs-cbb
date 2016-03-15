@@ -129,7 +129,7 @@ def report(grid_scores, n_top=3):
 
 
 ############ Players ############ MAE:
-fname = '../../data/train/P_fd_117a.p'
+fname = '../../data/train/P_fd_119c.p'
 
 P = pickle.load(open(fname,'rb'))
 n_estimators = 1400

@@ -36,7 +36,7 @@ def train_fold(clf,X_train,y_train,train_1,test_1,i,logfit):
 	X_test_1 = X_train[test_1]
 	y_test_1 = y_train[test_1]
 
-	_lambda = .5
+	_lambda = .4
 	if logfit:
 		__,_,y_min = boxcox_fit(y_train_1)
 
@@ -93,10 +93,10 @@ if __name__ == '__main__':
 	###########################################
 
 	########### PLAYERS ############ 
-	P = pickle.load(open('../../data/train/P_fd_109h.p','rb'))
+	P = pickle.load(open('../../data/train/P_fd_120a.p','rb'))
 	clfs,logfits = load_blend_models()
 	n_folds = 8
-	epsilon_final = 3e-05
+	epsilon_final = .001
 	C_final = 20
 	reg = Pipeline([
 	('scale', preprocessing.StandardScaler()),
@@ -126,7 +126,7 @@ if __name__ == '__main__':
 	n_clfs = len(clfs)
 	final_model = {}
 
-	_lambda = .5
+	_lambda = .4
 	__,_,y_min = boxcox_fit(y)
 
 	print "Creating train and test sets for blending."
@@ -166,4 +166,4 @@ if __name__ == '__main__':
 	final_model['ymin'] = y_min
 	final_model['_lambda'] = _lambda
 
-	pickle.dump(final_model,open('../../data/models/model_fd_stacked_109h.p','wb'))
+	pickle.dump(final_model,open('../../data/models/model_fd_stacked_120a.p','wb'))

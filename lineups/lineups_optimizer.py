@@ -33,7 +33,11 @@ glpk.options['msg_lev'] = 'GLP_MSG_OFF'
 class lineupOptimizer():
 
 	def __init__(self,excluded_players=[],excluded_teams=[],platform='fanduel',season='22015'):
-		self.db = pymysql.connect("localhost","cbb","","cbb",charset="utf8",cursorclass=pymysql.cursors.DictCursor)
+		dbc = json.load(open('../credentials/db.json','rb'))
+		live = dbc[dbc['live']]
+		self.db = pymysql.connect(live['host'],live['user'],live['pw'],live['db'],charset="utf8",cursorclass=pymysql.cursors.DictCursor)
+		
+
 		self.all_players = []
 		self.season = season
 		self.excluded_players = excluded_players

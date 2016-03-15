@@ -34,7 +34,7 @@ def report(grid_scores, n_top=3):
         print("")
 
 
-P = pickle.load(open('../../data/train/P_fd_118a.p','rb'))
+P = pickle.load(open('../../data/train/P_fd_119a.p','rb'))
 
 # X = np.hstack((np.array(P.X)[:,:-45],np.array(P.X)[:,-15:]))
 X = np.array(P.X)
@@ -44,7 +44,7 @@ start_size = X.shape[1]
 X_fp = X[:,0]
 print "Accuracy using unweighted fp mean: %.3f"%mean_absolute_error(X_fp,y)
 print 'Train data shape:',X.shape
-sys.exit()
+
 clf = Pipeline([
 ('pca',PCA(n_components = X.shape[1])),
 ('scale', preprocessing.StandardScaler()),
@@ -56,7 +56,7 @@ clf = Pipeline([
 param_grid = [
   {'regression__penalty': ['l1'],'regression__l1_ratio':[.85],'regression__epsilon':[1.5],\
    'regression__loss': ['epsilon_insensitive'],'regression__alpha':[.003],\
-   'regression__eta0':[.003],'pca__n_components':[47,46,45,44,43,42]}
+   'regression__eta0':[.002],'pca__n_components':[47]}
  ]
 
 start = time()

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-GAMEID="14978"
+GAMEID="14984"
 
 # echo --- getting new games ---
 # cd scrapers/allgames
@@ -22,22 +22,22 @@ GAMEID="14978"
 # python fanduel_players.py "$GAMEID"
 # cd ..
 
-echo --- housekeeping ---
-cd housekeeping
-python player_sync.py "$GAMEID"
-cd ..
-
-echo --- housekeeping ---
-cd housekeeping
-python team_sync.py "$GAMEID"
-cd ..
-
-echo --- predict ---
-cd lineups
-python predict_players.py "$GAMEID" "fanduel"
-cd ..
-
-# echo --- lineups ---
-# cd lineups
-# python lineups_optimizer.py "$GAMEID" "fanduel"
+# echo --- housekeeping ---
+# cd housekeeping
+# python player_sync.py "$GAMEID"
 # cd ..
+
+# echo --- housekeeping ---
+# cd housekeeping
+# python team_sync.py "$GAMEID"
+# cd ..
+
+# echo --- predict ---
+# cd lineups
+# python predict_players.py "$GAMEID" "fanduel"
+# cd ..
+
+echo --- lineups ---
+cd lineups
+python lineups_optimizer.py "$GAMEID" "fanduel"
+cd ..
